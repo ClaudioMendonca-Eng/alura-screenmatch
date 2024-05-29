@@ -77,7 +77,7 @@ Foi uma experiência muito gratificante e estou ansioso para aplicar todas essas
 
 Começamos configurando um projeto Spring Boot usando o Spring Initializr. Escolhemos o Maven como gerenciador de dependências e a linguagem Java na versão mais recente disponível. Aqui estão as configurações que usei:
 
-´´´yaml
+```yaml
 
 Group: br.com.alura
 Artifact: screenmatch
@@ -86,25 +86,25 @@ Description: Primeiro projeto Spring sem web
 Package name: br.com.alura.screenmatch
 Packaging: Jar
 Java: 17
-´´´
+```
 Após gerar o projeto, fiz o download do arquivo screenmatch.zip, que continha a estrutura básica do projeto Maven. Abrindo o projeto no IntelliJ, visualizei a estrutura de pastas e o arquivo pom.xml.
 
 Estrutura do Projeto
 A estrutura inicial do projeto consistia em pastas para Source, Main, Java, além de uma pasta principal com o nome completo da aplicação e uma parte de testes. O arquivo ScreenmatchApplication.java continha a classe principal com o método public static void main, ponto de entrada da aplicação.
 
-´´´java
+```java
 
 public static void main(String[] args) {
     SpringApplication.run(ScreenmatchApplication.class, args);
 }
-´´´
+```
 
 Executamos a aplicação pela primeira vez para ver se tudo estava funcionando. O terminal exibiu o log do Spring Boot indicando que a aplicação foi iniciada corretamente.
 
 Implementação do CommandLineRunner
 Para transformar a aplicação em uma linha de comando, implementamos a interface CommandLineRunner na classe principal. Isso permitiu realizar chamadas no método run, similar ao método main que já conhecíamos.
 
-´´´java
+```java
 
 @SpringBootApplication
 public class ScreenmatchApplication implements CommandLineRunner {
@@ -118,7 +118,7 @@ public class ScreenmatchApplication implements CommandLineRunner {
         System.out.println("Primeiro projeto Spring sem web.");
     }
 }
-´´´
+```
 
 Executamos novamente a aplicação e verificamos no terminal a mensagem "Primeiro projeto Spring sem web.".
 
