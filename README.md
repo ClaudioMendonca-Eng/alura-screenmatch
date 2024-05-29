@@ -78,6 +78,7 @@ Foi uma experiência muito gratificante e estou ansioso para aplicar todas essas
 Começamos configurando um projeto Spring Boot usando o Spring Initializr. Escolhemos o Maven como gerenciador de dependências e a linguagem Java na versão mais recente disponível. Aqui estão as configurações que usei:
 
 ´´´yaml
+
 Group: br.com.alura
 Artifact: screenmatch
 Name: screenmatch
@@ -92,6 +93,7 @@ Estrutura do Projeto
 A estrutura inicial do projeto consistia em pastas para Source, Main, Java, além de uma pasta principal com o nome completo da aplicação e uma parte de testes. O arquivo ScreenmatchApplication.java continha a classe principal com o método public static void main, ponto de entrada da aplicação.
 
 ´´´java
+
 public static void main(String[] args) {
     SpringApplication.run(ScreenmatchApplication.class, args);
 }
@@ -103,6 +105,7 @@ Implementação do CommandLineRunner
 Para transformar a aplicação em uma linha de comando, implementamos a interface CommandLineRunner na classe principal. Isso permitiu realizar chamadas no método run, similar ao método main que já conhecíamos.
 
 ´´´java
+
 @SpringBootApplication
 public class ScreenmatchApplication implements CommandLineRunner {
 
