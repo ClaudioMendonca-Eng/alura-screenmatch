@@ -17,9 +17,6 @@
 - [Apresentação](#apresentacao)
 - [Instrutores](#instrutor)
 - [Um novo projeto utilizando o Spring Framework](#start-spring)
-    - [Para saber mais: entendendo Maven e Gradle](#maven-gradle)
-    - [Para saber mais: a interface CommandLineRunner](#commandlinerunner)
-    - [Código para consumir API](#codigo-api)
     - [Consumindo dados de séries](#consumindo-series)
     - [Desserializando dados](#desserializando-dados)
     - [Incluindo a dependência do Jackson no pom.xml](#dependencia-jackson)
@@ -139,7 +136,8 @@ Essa experiência foi muito enriquecedora e estou ansioso para aplicar o que apr
   <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
 </p>
 
-## <a name="maven-gradle"> Para saber mais: entendendo Maven e Gradle </a>
+<details>
+  <summary> Para saber mais: entendendo Maven e Gradle </summary>
 
 Minha jornada no curso sobre Maven e Gradle foi enriquecedora, proporcionando uma compreensão detalhada dessas ferramentas essenciais no desenvolvimento Java.
 
@@ -172,12 +170,98 @@ O Maven é conhecido por sua facilidade de aprendizado e grande ecossistema, mas
 
 A escolha entre Maven e Gradle depende do projeto e das preferências da equipe. O Maven é ideal para projetos menores e mais simples, enquanto o Gradle brilha em projetos maiores e mais complexos que requerem personalização específica.
 
-Em resumo, ambos são poderosos e amplamente utilizados, e a escolha dependerá do contexto e das necessidades do projeto. Estou animado para aplicar esses conhecimentos em meus projetos futuros, aproveitando ao máximo as vantagens de cada ferramenta.
+Em resumo, ambos são poderosos e amplamente utilizados, e a escolha dependerá do contexto e das necessidades do projeto.
+</details>
 </details>
 
 <p align="right">
   <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
 </p>
+
+
+<details>
+  <summary> Para saber mais: a interface CommandLineRunner </summary>
+
+Aprendi como essa ferramenta é poderosa e amplamente utilizada no desenvolvimento de aplicações Java, especialmente em projetos Spring Boot.
+
+Entendendo a Funcionalidade
+A interface CommandLineRunner permite executar ações logo após a inicialização de uma aplicação Spring Boot. Isso é extremamente útil para realizar tarefas como carregar dados no banco de dados assim que a aplicação é iniciada.
+
+Implementação na Prática
+A utilização da interface é bastante simples. Basta implementá-la na classe principal da aplicação e definir a lógica a ser executada no método run. Aqui está um exemplo prático:
+
+```java
+@SpringBootApplication
+public class MyCommandLineRunner implements CommandLineRunner {
+   
+   @Override
+   public void run(String... args) throws Exception {
+       System.out.println("Olá, Mundo!");
+   }
+}
+```
+Nesse exemplo, criamos uma classe MyCommandLineRunner que implementa a interface CommandLineRunner. No método run, especificamos a ação desejada, que neste caso é apenas imprimir "Olá, Mundo!".
+
+<details>
+  <summary> Versatilidade de Uso </summary>
+A CommandLineRunner pode ser aplicada em uma variedade de situações. Além de carregar dados para o banco de dados, pode-se usar para iniciar recursos, como conexões de rede, e para verificar a integridade de componentes ou serviços.
+</details>
+
+<details>
+  <summary> Motivação e Aprofundamento </summary>
+Aprendi que a CommandLineRunner é uma ferramenta valiosa para otimizar o processo de inicialização da aplicação e simplificar tarefas complexas. Isso pode ser especialmente útil em cenários onde há necessidade de carregar grandes volumes de dados no banco de dados logo no início da execução da aplicação.
+
+Ao aprofundar meu conhecimento no Spring, descobri que há uma infinidade de ferramentas e recursos disponíveis para tornar meu código mais eficiente e limpo. O Spring facilita o desenvolvimento de aplicações em Java, fornecendo um modelo de programação abrangente e simplificado.
+
+Em resumo, o curso me proporcionou uma compreensão mais profunda do Spring Framework e como utilizar suas ferramentas para desenvolver aplicações Java de forma eficaz.
+</details>
+</details>
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+<details>
+  <summary> Código para consumir API </summary>
+
+Minha experiência no curso incluiu a criação de uma classe chamada ConsumoAPI, onde implementamos um método chamado obterDados para consumir uma API de busca de dados de séries. Essa classe foi organizada dentro do pacote service.
+
+O método obterDados é responsável por enviar uma requisição HTTP para o endereço especificado e retornar a resposta em formato JSON como uma string. Esse procedimento foi muito similar ao que aprendemos no curso anterior da formação Java com Orientação a Objetos.
+
+Aqui está o código do método obterDados, que você pode facilmente copiar e colar em sua classe para acelerar seus estudos:
+
+```java
+public String obterDados(String endereco) {
+    HttpClient client = HttpClient.newHttpClient();
+    HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(endereco))
+            .build();
+    HttpResponse<String> response = null;
+    try {
+        response = client
+                .send(request, HttpResponse.BodyHandlers.ofString());
+    } catch (IOException e) {
+        throw new RuntimeException(e);
+    } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+    }
+
+    String json = response.body();
+    return json;
+}
+```
+
+Esse método é uma maneira eficiente de consumir APIs e obter dados de forma rápida e fácil. A partir daqui, podemos manipular os dados recebidos e utilizá-los em nossa aplicação.
+
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+## <a name="consumindo-series"> Consumindo dados de séries </a>
+
+</details>
+
 
 
 
