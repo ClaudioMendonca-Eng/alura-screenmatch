@@ -141,42 +141,33 @@ Essa experiência foi muito enriquecedora e estou ansioso para aplicar o que apr
 
 Minha jornada no curso sobre Maven e Gradle foi enriquecedora, proporcionando uma compreensão detalhada dessas ferramentas essenciais no desenvolvimento Java.
 
-<details>
-  <summary> Maven: Simplicidade e Convenção </summary>
+    • Maven: Simplicidade e Convenção
 
 Com o Maven, mergulhei nos principais conceitos, como gerenciamento de dependências, ciclo de vida padrão e o repositório central. A simplicidade de declarar dependências no `pom.xml` e deixar o Maven cuidar do resto foi impressionante. O ciclo de vida padrão simplificou as tarefas de compilação, teste e empacotamento do projeto. Além disso, o amplo repositório central do Maven ofereceu uma vasta gama de bibliotecas prontas para uso.
-</details>
 
-<details>
-  <summary> Gradle: Flexibilidade e Personalização </summary>
+    • Gradle: Flexibilidade e Personalização
 
 Explorando o Gradle, descobri sua flexibilidade e poder de personalização. Sua DSL baseada em Groovy ou Kotlin permitiu definir a estrutura do projeto e as tarefas de construção de forma altamente flexível. Adorei a capacidade de criar compilações incrementais, o que tornou o processo mais rápido e eficiente.
-</details>
 
-<details>
-  <summary> Semelhanças e Diferenças </summary>
+    • Semelhanças e Diferenças
 
 Ambas as ferramentas fornecem convenções para estrutura de diretórios, gerenciamento de dependências e plugins de construção. A principal diferença reside na maneira como gerenciam dependências e descrevem a lógica de construção. Maven usa arquivos XML e plugins, enquanto o Gradle usa scripts de construção como código.
-</details>
 
-<details>
-  <summary> Vantagens e Desvantagens </summary>
+    • Vantagens e Desvantagens
 
 O Maven é conhecido por sua facilidade de aprendizado e grande ecossistema, mas seus arquivos XML podem se tornar complicados em projetos complexos. Já o Gradle oferece scripts de construção mais poderosos e é mais flexível, porém possui uma curva de aprendizado mais íngreme e um ecossistema menos desenvolvido.
-</details>
 
-<details>
-  <summary> Escolha e Contexto </summary>
+    • Escolha e Contexto
 
 A escolha entre Maven e Gradle depende do projeto e das preferências da equipe. O Maven é ideal para projetos menores e mais simples, enquanto o Gradle brilha em projetos maiores e mais complexos que requerem personalização específica.
 
 Em resumo, ambos são poderosos e amplamente utilizados, e a escolha dependerá do contexto e das necessidades do projeto.
-</details>
-</details>
 
 <p align="right">
   <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
 </p>
+
+</details>
 
 
 <details>
@@ -191,35 +182,32 @@ Implementação na Prática
 A utilização da interface é bastante simples. Basta implementá-la na classe principal da aplicação e definir a lógica a ser executada no método run. Aqui está um exemplo prático:
 
 ```java
-@SpringBootApplication
-public class MyCommandLineRunner implements CommandLineRunner {
-   
-   @Override
-   public void run(String... args) throws Exception {
-       System.out.println("Olá, Mundo!");
-   }
-}
+    @SpringBootApplication
+    public class MyCommandLineRunner implements CommandLineRunner {
+    
+    @Override
+    public void run(String... args) throws Exception {
+        System.out.println("Olá, Mundo!");
+    }
+    }
 ```
 Nesse exemplo, criamos uma classe MyCommandLineRunner que implementa a interface CommandLineRunner. No método run, especificamos a ação desejada, que neste caso é apenas imprimir "Olá, Mundo!".
 
-<details>
-  <summary> Versatilidade de Uso </summary>
+    • Versatilidade de Uso
 A CommandLineRunner pode ser aplicada em uma variedade de situações. Além de carregar dados para o banco de dados, pode-se usar para iniciar recursos, como conexões de rede, e para verificar a integridade de componentes ou serviços.
-</details>
 
-<details>
-  <summary> Motivação e Aprofundamento </summary>
+    • Motivação e Aprofundamento
 Aprendi que a CommandLineRunner é uma ferramenta valiosa para otimizar o processo de inicialização da aplicação e simplificar tarefas complexas. Isso pode ser especialmente útil em cenários onde há necessidade de carregar grandes volumes de dados no banco de dados logo no início da execução da aplicação.
 
 Ao aprofundar meu conhecimento no Spring, descobri que há uma infinidade de ferramentas e recursos disponíveis para tornar meu código mais eficiente e limpo. O Spring facilita o desenvolvimento de aplicações em Java, fornecendo um modelo de programação abrangente e simplificado.
 
 Em resumo, o curso me proporcionou uma compreensão mais profunda do Spring Framework e como utilizar suas ferramentas para desenvolver aplicações Java de forma eficaz.
-</details>
-</details>
 
 <p align="right">
   <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
 </p>
+
+</details>
 
 <details>
   <summary> Código para consumir API </summary>
@@ -253,14 +241,132 @@ public String obterDados(String endereco) {
 
 Esse método é uma maneira eficiente de consumir APIs e obter dados de forma rápida e fácil. A partir daqui, podemos manipular os dados recebidos e utilizá-los em nossa aplicação.
 
-
 <p align="right">
   <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
 </p>
 
+</details>
+
 ## <a name="consumindo-series"> Consumindo dados de séries </a>
 
-</details>
+Durante o curso, tive a oportunidade de aprender a consumir uma API usando o Spring Framework, o que me permitiu entender melhor como integrar serviços externos em minhas aplicações Java. A experiência começou com a criação de um pacote de serviços chamado service e a implementação de uma classe chamada ConsumoApi para fazer as requisições e obter respostas em formato JSON.
+
+Aqui está um resumo das etapas que segui e das práticas que aprendi:
+
+        - Criando o Pacote de Serviços
+Primeiramente, criei um pacote de serviços chamado service no projeto br.com.alura.screenmatch. No IntelliJ, isso foi feito clicando com o botão direito no diretório br.com.alura.screenmatch, selecionando "New > Package" e nomeando-o de service.
+
+Implementando a Classe ConsumoApi
+Dentro do pacote service, criei uma nova classe Java chamada ConsumoApi. O objetivo dessa classe era consumir uma API e obter dados JSON. O método principal dessa classe, obterDados, foi implementado para enviar uma requisição HTTP e retornar a resposta como uma string JSON. Aqui está o código:
+
+```java
+package br.com.alura.screenmatch.service;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+public class ConsumoApi {
+
+    public String obterDados(String endereco) {
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(endereco))
+                .build();
+        HttpResponse<String> response = null;
+        try {
+            response = client
+                    .send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        String json = response.body();
+        return json;
+    }
+}
+```
+Consumindo Dados de Séries
+Para consumir dados de séries usando a API, utilizei a classe principal da aplicação. A ideia era acessar o método run e chamar a classe ConsumoApi. Isso modularizou nosso código, tornando-o mais fácil de manter e mais legível.
+
+No método run, instanciei a classe ConsumoApi e chamei o método obterDados com a URL da API, passando a chave de API como parâmetro. Aqui está como ficou:
+    
+```java
+    @Override
+    public void run(String... args) throws Exception {
+    var consumoApi = new ConsumoApi();
+    var json = consumoApi.obterDados("https://www.omdbapi.com/?t=gilmore+girls&apikey=6585022c");
+    System.out.println(json);
+}
+```	
+
+Testando com Diferentes APIs
+Foi interessante ver como a classe ConsumoApi poderia ser reutilizada para consumir diferentes APIs. Por exemplo, além de obter dados de séries, testei a classe com uma API que retorna imagens de café:
+
+```java
+    @Override
+    public void run(String... args) throws Exception {
+    var consumoApi = new ConsumoApi();
+    var json = consumoApi.obterDados("https://www.omdbapi.com/?t=gilmore+girls&apikey=6585022c");
+    System.out.println(json);
+    
+    json = consumoApi.obterDados("https://coffee.alexflipnote.dev/random.json");
+    System.out.println(json);
+}
+```
+
+Para garantir a segurança da chave da API, utilizei o arquivo `application.yml` do Spring para esconder a API Key, mantendo-a fora do código-fonte. Esta prática é essencial para proteger informações sensíveis e evitar que sejam expostas acidentalmente em repositórios públicos. Estou ansioso para continuar aplicando esses conhecimentos em projetos futuros.
+
+`application.yml`
+```yaml
+api:
+  key: key da API
+```
+
+Como ficou a classe principal da aplicação depois de adicionar a chave da API no arquivo `application.yml`:
+
+```java
+package br.com.alura.screenmatch;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import br.com.alura.screenmatch.service.ConsumoApi;
+
+@SpringBootApplication
+public class ScreenmatchApplication implements CommandLineRunner{
+
+	// Adicione a chave da API do OMDB
+	@Value("${api.key}")
+    private String apiKey;
+	
+
+	public static void main(String[] args) {
+		SpringApplication.run(ScreenmatchApplication.class, args);
+	}
+
+	@Override
+	public void run(String... args) throws Exception {
+		var consumoApi = new ConsumoApi();
+		var json = consumoApi.obterDados("https://www.omdbapi.com/?t=gilmore+girls&apikey=" + apiKey);
+		System.out.println(json);
+
+	}
+
+}
+```
+
+Essa experiência me mostrou a importância de seguir boas práticas ao desenvolver aplicações, como separar responsabilidades em classes específicas. A criação de uma classe dedicada ao consumo de APIs não só tornou meu código mais organizado, mas também facilitou a manutenção e a escalabilidade da aplicação.
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
 
 
 
