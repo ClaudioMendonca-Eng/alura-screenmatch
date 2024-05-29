@@ -19,26 +19,13 @@
 - [Um novo projeto utilizando o Spring Framework](#start-spring)
     - [Consumindo dados de séries](#consumindo-series)
     - [Desserializando dados](#desserializando-dados)
-    - [Incluindo a dependência do Jackson no pom.xml](#dependencia-jackson)
-    - [Para saber mais: JsonAlias e JsonProperty](#json-alias-property)
     - [Modelando dados da série](#modelando-dados)
-    - [Para saber mais: Generics](#generics)
-    - [Trabalhando com tipos genéricos](#trabalhando-genericos)
-    - [Faça como eu fiz: consumindo uma API, criando classes e interfaces, e implementando métodos](#consumindo-api)
 - [Modelando os dados da aplicação](#modelando-dados)
     - [Modelando episódios](#modelando-episodios)
-    - [Para saber mais: Git e GitHub](#git-github)
     - [Modelando temporadas](#modelando-temporadas)
-    - [Iterando para buscar temporadas de uma série](#iterando-temporadas)
-    - [Para saber mais: coleções](#colecoes)
-    - [Buscando somente episódio pares](#buscando-episodios-pares)
     - [Criando o menu de interação com o usuário](#menu-interacao)
-    - [Para saber mais: constantes](#constantes)
     - [Buscando dados completos da série](#buscando-dados)
     - [Trabalhando na coleção de dados](#trabalhando-colecao)
-    - [Para saber mais: funções Lambda](#funcoes-lambda)
-    - [Ignorando propriedades no Java](#ignorando-propriedades)
-    - [Faça como eu fiz: aplicando interação com o usuário](#interacao-usuario)
 - [Manipulando com fluxos as coleções de dados](#)
 
 ## <a name="apresentacao"> Apresentação </a>
@@ -299,7 +286,7 @@ No método run, instanciei a classe ConsumoApi e chamei o método obterDados com
     @Override
     public void run(String... args) throws Exception {
     var consumoApi = new ConsumoApi();
-    var json = consumoApi.obterDados("https://www.omdbapi.com/?t=gilmore+girls&apikey=6585022c");
+    var json = consumoApi.obterDados("https://www.omdbapi.com/?t=gilmore+girls&apikey=keyAPI");
     System.out.println(json);
 }
 ```	
@@ -311,7 +298,7 @@ Foi interessante ver como a classe ConsumoApi poderia ser reutilizada para consu
     @Override
     public void run(String... args) throws Exception {
     var consumoApi = new ConsumoApi();
-    var json = consumoApi.obterDados("https://www.omdbapi.com/?t=gilmore+girls&apikey=6585022c");
+    var json = consumoApi.obterDados("https://www.omdbapi.com/?t=gilmore+girls&apikey=keyAPI");
     System.out.println(json);
     
     json = consumoApi.obterDados("https://coffee.alexflipnote.dev/random.json");
@@ -406,6 +393,252 @@ Como ficou a saida no terminal do arquivo json:
 </p>
 
 
+## <a name="desserializando-dados"> Desserializando dados </a>
 
 
+Desserializando Dados
+Primeiramente, comentei as linhas de código referentes ao teste com a imagem do café, que foi feito na aula anterior. O objetivo agora era pegar os dados da série em formato JSON e transformá-los em uma classe Java.
 
+Incluindo a Dependência Jackson
+Para usar o Jackson, acessei o MVN Repository e busquei por "Jackson DataBind". Copiei a dependência mais recente e adicionei ao arquivo pom.xml do projeto:
+
+```xml
+<dependency> 
+    <groupId>com.fasterxml.jackson.core</groupId> 
+    <artifactId>jackson-databind</artifactId> 
+    <version>2.15.2</version>
+</dependency>
+```
+Após adicionar essa dependência, sincronizei o Maven para baixar e incluir a biblioteca no projeto.
+
+Modelando a Classe para os Dados da Série
+Seguindo as boas práticas, criei um novo pacote chamado model no projeto e dentro dele uma classe chamada DadosSerie usando a opção record. Essa classe foi projetada para mapear os dados relevantes da série, como título, total de temporadas e avaliação:
+
+```java
+import com.fasterxml.jackson.annotation.JsonAlias;
+
+public record DadosSerie(@JsonAlias("Title") String titulo,
+                         @JsonAlias("totalSeasons") Integer totalTemporadas,
+                         @JsonAlias("imdbRating") String avaliacao) {
+}
+
+```
+
+Utilizei a anotação @JsonAlias para mapear os campos do JSON para os atributos da classe. Essa anotação permite dar apelidos aos campos JSON, facilitando a desserialização.
+
+Atualizando o Método run
+Na classe principal, modifiquei o método run para utilizar a nova classe DadosSerie e desserializar os dados JSON recebidos da API:
+
+```java
+@Override
+public void run(String... args) throws Exception {
+    var consumoApi = new ConsumoApi();
+    var json = consumoApi.obterDados("https://www.omdbapi.com/?t=supernatural&apikey=" + apiKey);
+    System.out.println(json);
+    
+    ObjectMapper objectMapper = new ObjectMapper();
+    DadosSerie dadosSerie = objectMapper.readValue(json, DadosSerie.class);
+    System.out.println(dadosSerie);
+}
+
+```
+
+Testando com Diferentes APIs
+Testei a reutilização da classe ConsumoApi com outra API para verificar a flexibilidade do código. Aqui está um exemplo de como fiz isso:
+
+
+```java
+@Override
+public void run(String... args) throws Exception {
+    var consumoApi = new ConsumoApi();
+    var json = consumoApi.obterDados("https://www.omdbapi.com/?t=supernatural&apikey=" + apiKey);
+    System.out.println(json);
+}
+
+```
+
+Essa experiência me mostrou a importância de seguir boas práticas ao desenvolver aplicações, como separar responsabilidades em classes específicas. A criação de uma classe dedicada ao consumo de APIs e a utilização da biblioteca Jackson para desserialização não só tornaram meu código mais organizado, mas também facilitaram a manutenção e a escalabilidade da aplicação.
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+<details>
+  <summary> Incluindo a dependência do Jackson no pom.xml </summary>
+  Em serialização e desserialização de dados usando a biblioteca Jackson, essencial para manipular JSON em Java. Aprendi sobre duas anotações cruciais: @JsonAlias e @JsonProperty, que são ferramentas poderosas para mapear propriedades de classe para campos JSON.
+  
+  Diferenças entre @JsonAlias e @JsonProperty
+  @JsonProperty
+  A anotação @JsonProperty é usada para definir o nome da propriedade JSON associada a um campo Java. Quando serializamos (convertendo objetos Java para JSON), o nome especificado em @JsonProperty será utilizado como a chave no JSON de saída. Da mesma forma, na desserialização (convertendo JSON para objetos Java), o Jackson procura o nome especificado em @JsonProperty para mapear o valor JSON ao campo Java.
+  
+  Por exemplo, se tenho uma classe Java com a propriedade nomeCompleto e quero que ela seja mapeada no JSON como nome, posso usar @JsonProperty("nome") para especificar o nome correto no JSON:
+  ```java
+  public class Pessoa {
+    @JsonProperty("nome")
+    private String nomeCompleto;
+```
+@JsonAlias
+A anotação @JsonAlias é usada para definir um ou mais apelidos para o nome da propriedade JSON associada a um campo Java. Na desserialização, @JsonAlias permite que o Jackson encontre o valor JSON correspondente, mesmo que o nome da propriedade no JSON não corresponda exatamente ao nome do campo Java. Isso é especialmente útil quando se trabalha com diferentes versões de um JSON ou quando se deseja permitir que uma propriedade seja referenciada por vários nomes.
+
+Por exemplo, se tenho uma classe Java com a propriedade nomeCompleto e o JSON usa nome ou nomeCompleto, posso usar @JsonAlias({"nomeCompleto", "nome"}) para mapear corretamente a propriedade. Dessa forma, tanto nomeCompleto quanto nome serão aceitos ao fazer o mapeamento:
+
+```java
+public class Pessoa {
+    @JsonAlias({"nomeCompleto", "nome"})
+    private String nomeCompleto;
+}
+```	
+Utilizar anotações do Jackson para gerenciar a serialização e desserialização de dados de forma eficiente. Entendi como @JsonAlias e @JsonProperty podem ser usados para adaptar meus modelos Java às diferentes estruturas de JSON que posso encontrar. A criação de uma classe dedicada ao consumo de APIs e o uso adequado dessas anotações tornaram meu código mais flexível e robusto.
+
+Para mais informações sobre as anotações do Jackson, você pode consultar a [documentação oficial](https://github.com/FasterXML/jackson).
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+</details>
+
+## <a name="modelando-dados"> Modelando dados da série </a>
+
+A desserializar dados JSON em uma classe Java usando a biblioteca Jackson. Foi uma experiência valiosa que me ensinou a lidar com conversões de dados de forma eficiente e flexível. Aqui está um resumo das práticas que adotei e das lições aprendidas:
+
+    - Criação de Serviços para Conversão de Dados
+Classe ConverteDados
+Primeiro, criei a classe ConverteDados no pacote service. Seguindo as boas práticas, utilizei a classe ObjectMapper do Jackson para converter JSON em objetos Java. Para tornar a conversão mais flexível e reutilizável, implementei uma interface genérica.
+
+```java
+package br.com.alura.screenmatch.service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+public class ConverteDados implements IConverteDados {
+    private ObjectMapper mapper = new ObjectMapper();
+
+    @Override
+    public <T> T obterDados(String json, Class<T> classe) {
+        try {
+            return mapper.readValue(json, classe);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+
+```
+    - Interface IConverteDados
+Criei a interface IConverteDados para definir um método genérico de conversão. Isso permite que a classe ConverteDados possa converter qualquer tipo de dado especificado.
+
+```java
+package br.com.alura.screenmatch.service;
+
+public interface IConverteDados {
+    <T> T obterDados(String json, Class<T> classe);
+}
+
+```
+    - Implementação na Classe Principal
+Na classe principal ScreenmatchApplication, utilizei a classe ConverteDados para obter e converter os dados da API. Primeiro, ajustei a URL para obter apenas os dados da série, e então utilizei o conversor para transformar o JSON recebido em um objeto DadosSerie.
+
+```java
+@Override
+public void run(String... args) throws Exception {
+    var consumoApi = new ConsumoApi();
+    var json = consumoApi.obterDados("https://www.omdbapi.com/?t=supernatural&apikey=" + apiKey);
+    System.out.println(json);
+    ConverteDados conversor = new ConverteDados();
+    DadosSerie dados = conversor.obterDados(json, DadosSerie.class);
+    System.out.println(dados);
+}
+
+```
+    - Mapeamento de Propriedades com Jackson
+Na classe DadosSerie, utilizei anotações do Jackson para mapear corretamente as propriedades do JSON. Aprendi a usar @JsonAlias para lidar com diferentes nomes de propriedades e @JsonIgnoreProperties para ignorar propriedades desconhecidas.
+
+```java
+package br.com.alura.screenmatch.model;
+
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public record DadosSerie(@JsonAlias("Title") String titulo,
+                         @JsonAlias("totalSeasons") Integer totalTemporadas,
+                         @JsonAlias("imdbRating") String avaliacao) {
+}
+
+```
+
+    - Execução e Validação
+Ao executar a aplicação, inicialmente encontramos um erro devido a uma propriedade não mapeada (Year). Resolvi isso adicionando a anotação @JsonIgnoreProperties(ignoreUnknown = true), que instrui o Jackson a ignorar quaisquer propriedades desconhecidas durante a desserialização.
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+<details>
+  <summary> Para saber mais: Generics </summary>
+  Os generics em Java, uma poderosa ferramenta que permite criar classes, interfaces e métodos capazes de lidar com tipos desconhecidos de forma flexível e reutilizável. Aqui está o que aprendi:
+
+    • Classes Genéricas
+No Java, generics são representados por parâmetros de tipo entre colchetes angulares < >. Esses parâmetros permitem que você crie classes genéricas, como a classe Caixa, capaz de armazenar qualquer tipo de valor.
+    
+```java
+    public class Caixa<T> {
+    private T conteudo;
+
+    public T getConteudo() {
+        return conteudo;
+    }
+
+    public void setConteudo(T conteudo) {
+        this.conteudo = conteudo;
+    }
+}
+```
+
+    • Uso de Classes Genéricas
+Com as classes genéricas, pude criar objetos como Caixa<String>, Caixa<Integer>, e Caixa<Double>, cada um capaz de armazenar um tipo específico de valor.
+
+```java
+Caixa<String> caixaDeTexto = new Caixa();
+caixaDeTexto.setConteudo("Guardando texto na minha caixa!");
+
+Caixa<Integer> caixaDeIdade = new Caixa();
+caixaDeIdade.setConteudo(30);
+
+Caixa<Double> caixaDeValor = new Caixa<>();
+caixaDeValor.setConteudo(150.50);
+```
+
+    • Métodos Genéricos
+Também aprendi a criar métodos genéricos que podem operar com diferentes tipos de dados. Por exemplo, criei um método na classe Caixa capaz de somar o conteúdo atual com um novo valor, independente do tipo de dado.
+
+```java	
+public <T> T somaConteudoNaCaixa(T valor) {
+    // Lógica para soma do conteúdo com o valor
+}
+```
+
+    • Verificação de Tipo com Generics
+Utilizando o operador instanceof, pude verificar o tipo de dados passados para o método genérico e realizar operações específicas com base nesses tipos.
+
+```java
+if (this.conteudo instanceof Integer c && valor instanceof Integer i) {
+    // Realiza a soma entre os valores e armazena o resultado em uma variável
+    Integer resultado = c + i;
+    // Retorna o resultado como tipo genérico T (Integer no caso)
+    return (T) resultado;
+}
+```
+
+    • Execução e Validação
+Testei o funcionamento dos métodos genéricos com diferentes tipos de dados e observei como o compilador garante a segurança de tipo, garantindo que apenas operações válidas sejam realizadas.
+
+Explorar generics em Java foi uma experiência enriquecedora. Agora me sinto preparado para criar classes e métodos flexíveis e reutilizáveis, capazes de lidar com uma variedade de tipos de dados.
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+</details>
