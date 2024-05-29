@@ -330,6 +330,7 @@ api:
 Como ficou a classe principal da aplicação depois de adicionar a chave da API no arquivo `application.yml`:
 
 ```java
+
 package br.com.alura.screenmatch;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -354,15 +355,51 @@ public class ScreenmatchApplication implements CommandLineRunner{
 	@Override
 	public void run(String... args) throws Exception {
 		var consumoApi = new ConsumoApi();
-		var json = consumoApi.obterDados("https://www.omdbapi.com/?t=gilmore+girls&apikey=" + apiKey);
+		var json = consumoApi.obterDados("https://www.omdbapi.com/?t=supernatural&apikey=" + apiKey);
 		System.out.println(json);
 
 	}
 
 }
+
 ```
 
 Essa experiência me mostrou a importância de seguir boas práticas ao desenvolver aplicações, como separar responsabilidades em classes específicas. A criação de uma classe dedicada ao consumo de APIs não só tornou meu código mais organizado, mas também facilitou a manutenção e a escalabilidade da aplicação.
+
+Como ficou a saida no terminal do arquivo json:
+
+```json
+{
+  "Title": "Supernatural",
+  "Year": "2005–2020",
+  "Rated": "TV-14",
+  "Released": "13 Sep 2005",
+  "Runtime": "44 min",
+  "Genre": "Drama, Fantasy, Horror",
+  "Director": "N/A",
+  "Writer": "Eric Kripke",
+  "Actors": "Jared Padalecki, Jensen Ackles, Jim Beaver",
+  "Plot": "Two brothers follow their father's footsteps as hunters, fighting evil supernatural beings of many kinds, including monsters, demons, and gods that roam the earth.",
+  "Language": "English",
+  "Country": "United States",
+  "Awards": "Nominated for 3 Primetime Emmys. 37 wins & 126 nominations total",
+  "Poster": "https://m.media-amazon.com/images/M/MV5BNzRmZWJhNjUtY2ZkYy00N2MyLWJmNTktOTAwY2VkODVmOGY3XkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_SX300.jpg",
+  "Ratings": [
+    {
+      "Source": "Internet Movie Database",
+      "Value": "8.4/10"
+    }
+  ],
+  "Metascore": "N/A",
+  "imdbRating": "8.4",
+  "imdbVotes": "482,839",
+  "imdbID": "tt0460681",
+  "Type": "series",
+  "totalSeasons": "15",
+  "Response": "True"
+}
+
+```
 
 <p align="right">
   <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
