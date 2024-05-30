@@ -997,7 +997,7 @@ public class Principal {
     public void exibMenu(){
         System.out.println("Digite o nome da série para a busca");
         var nomeSerie = leitura.nextLine();
-        //"https://www.omdbapi.com/?t=gilmore+girls&apikey=6585022c"
+        //"https://www.omdbapi.com/?t=gilmore+girls&apikey=CodigoAPI"
     }
 }
 ```
