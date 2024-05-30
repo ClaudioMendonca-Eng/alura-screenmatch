@@ -22,7 +22,7 @@ public class Principal {
     private ConverteDados conversor = new ConverteDados();
 
     private final String ENDERECO = "https://www.omdbapi.com/?t=";
-    private final String API_KEY = "&apikey=6585022c";
+    private final String API_KEY = "&apikey=codigoAPI";
 
     public void exibeMenu(){
         System.out.println("Digite o nome da série para busca");
