@@ -26,7 +26,11 @@
     - [Criando o menu de interação com o usuário](#menu-interacao)
     - [Buscando dados completos da série](#buscando-dados-completos)
     - [Trabalhando na coleção de dados](#trabalhando-colecao)
-- [Manipulando com fluxos as coleções de dados](#)
+- [Manipulando com fluxos as coleções de dados](#manipulando-fluxos-colecoes-dados)
+    - [Encadeando operações com streams](#encadeando-operacoes-streams)
+    - [Identificando os top 5 melhores episódios](#identificando-top-5-episodios)
+    - [Uma nova classe para lidar com os dados do episódio](#nova-classe-dados-episodio)
+    - [Buscando episódios a partir de uma data](#buscando-episodios-data)    
 
 ## <a name="apresentacao"> Apresentação </a>
 
@@ -1297,6 +1301,731 @@ lista.stream().filter(i -> i % 2 == 0).forEach(System.out::println);
 - Simplificando o Código
 
 Comparado a abordagens tradicionais, o uso de funções lambda torna o código mais conciso e legível. Ao filtrar e imprimir números pares, a sintaxe das funções lambda simplifica o processo.
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+</details>
+
+
+## <a name="manipulando-fluxos-colecoes-dados"> Manipulando fluxos e coleções de dados </a>
+
+## <a name="encadeando-operacoes-streams"> Encadeando operações com Streams </a>
+
+Nas coleções em Java, começamos a modelar e discutimos as funções lambda, que foram introduzidas no Java 8. Essas funções são incríveis porque oferecem uma maneira super concisa de escrever código. Elas sempre têm um parâmetro e depois uma seta que aponta para uma expressão que define o que fazer com esse parâmetro. Por exemplo, se estamos lidando com temporadas, o parâmetro representa cada temporada; se estamos trabalhando com episódios, ele representa cada episódio.
+
+Mas as funções lambda não vieram sozinhas! Elas trouxeram consigo algo chamado Streams. Esses Streams são como fluxos de dados que nos permitem encadear operações de uma forma super elegante. Lembro-me de criar um fluxo de nomes e realizar operações encadeadas com eles, como ordenar alfabeticamente e limitar a três nomes. E o melhor é que cada operação gera um novo fluxo, então podemos fazer uma operação após a outra, sem complicação.
+
+A parte mais legal é que essas operações no fluxo podem ser intermediárias ou finais. As intermediárias geram novos fluxos de dados para realizar operações agregadas, enquanto as finais são aquelas que realmente finalizam o processo, como imprimir os resultados na tela.
+
+Aprendi que com Streams e funções lambda, posso fazer coisas incríveis em apenas algumas linhas de código. Por exemplo, limitar a visualização dos nomes a apenas aqueles que começam com "N" e, em seguida, transformar todos os caracteres em maiúsculas. Sem esses recursos, isso exigiria muito mais código e seria bem mais complicado!
+
+Códigos de exemplo que foram mencionados no texto:
+
+1. **Funções Lambda:**
+   ```java
+   temporadas.forEach(t -> t.episodios().forEach(e -> System.out.println(e.titulo())));
+   ```
+   Isso itera sobre os episódios em cada temporada e imprime o título de cada episódio.
+
+2. **Operações com Streams:**
+   ```java
+   List<String> nomes = Arrays.asList("Jacque", "Iasmin", "Paulo", "Rodrigo", "Nico");
+
+   nomes.stream()
+       .sorted()
+       .forEach(System.out::println);
+   ```
+   Isso ordena os nomes alfabeticamente e os imprime.
+
+   ```java
+   nomes.stream()
+       .sorted()
+       .limit(3)
+       .forEach(System.out::println);
+   ```
+   Este código limita a visualização dos nomes às três primeiras pessoas após a ordenação.
+
+   ```java
+   nomes.stream()
+       .sorted()
+       .limit(3)
+       .filter(n -> n.startsWith("N"))
+       .forEach(System.out::println);
+   ```
+   Isso filtra os nomes para incluir apenas aqueles que começam com a letra "N" e imprime-os.
+
+   ```java
+   nomes.stream()
+       .sorted()
+       .limit(3)
+       .filter(n -> n.startsWith("N"))
+       .map(n -> n.toUpperCase())
+       .forEach(System.out::println);
+   ```
+   Isso transforma os nomes selecionados para maiúsculas antes de imprimi-los.
+
+   ```java
+   nomes.stream().sorted().limit(3).filter(n -> n.startsWith("N")).map(n -> n.toUpperCase()).forEach(System.out::println);
+   ```
+    E, finalmente, todas essas operações encadeadas em uma única linha!
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+
+<details>
+  <summary> Para saber mais: Operações intermediárias e finais em Streams </summary>
+  Trabalhar com streams no Java foi uma parte empolgante do curso. As streams são uma nova maneira de lidar com coleções de dados, introduzidas no Java 8. Elas oferecem uma abordagem funcional para realizar operações de forma eficiente e concisa.
+
+As streams permitem processar sequências de elementos, como coleções, arrays ou arquivos, de maneira paralela ou serial. Durante o curso, aprendi sobre operações intermediárias e finais das streams.
+
+As operações intermediárias são aquelas que podemos aplicar em uma stream para manipular seus elementos. Elas retornam uma nova stream como resultado e incluem operações como filter e map. Por exemplo, pude filtrar uma lista de números para obter apenas os números pares usando a operação `filter`, e mapear uma lista de strings para seus respectivos tamanhos usando `map`.
+
+```java
+List<Integer> numeros = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
+List<Integer> numerosPares = numeros.stream()
+                                   .filter(n -> n % 2 == 0)
+                                   .collect(Collectors.toList());
+
+System.out.println(numerosPares); // Output: [2, 4, 6, 8, 10]
+```
+
+```java
+List<String> palavras = Arrays.asList("Java", "Stream", "Operações", "Intermediárias");
+
+List<Integer> tamanhos = palavras.stream()
+                                .map(s -> s.length())
+                                .collect(Collectors.toList());
+
+System.out.println(tamanhos); // Output: [4, 6, 11, 17]
+```
+
+Já as operações finais são aquelas que encerram a stream e retornam um resultado concreto. Elas incluem operações como `forEach` e `collect`. Por exemplo, pude usar `forEach` para imprimir cada elemento de uma lista e `collect` para coletar os elementos da stream em uma coleção.
+
+```java
+List<String> nomes = Arrays.asList("João", "Maria", "Pedro", "Ana");
+
+nomes.stream()
+     .forEach(nome -> System.out.println("Olá, " + nome + "!"));
+
+// Output:
+// Olá, João!
+// Olá, Maria!
+// Olá, Pedro!
+// Olá, Ana!
+```
+
+```java
+List<Integer> numeros = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
+Set<Integer> numerosPares = numeros.stream()
+                                   .filter(n -> n % 2 == 0)
+                                   .collect(Collectors.toSet());
+
+System.out.println(numerosPares); // Output: [2, 4, 6, 8, 10]
+```
+
+Com as streams, pude escrever código mais legível e expressivo, facilitando o processamento e a transformação de dados. Além das operações mencionadas, aprendi sobre várias outras disponíveis, como `distinct`, `limit`, `skip`, `reduce`, entre outras.
+
+As streams no Java são uma ferramenta poderosa para manipulação de coleções de dados, e estou animado para aplicar esses conceitos em meus projetos futuros.
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+</details>
+
+
+## <a name="identificando-top-5-episodios"> Identificando os Top 5 episódios </a>
+
+O streams no Java para manipulação eficiente de coleções de dados. Um dos exercícios mais interessantes foi trabalhar com uma lista de temporadas de uma série e extrair os episódios para formar uma lista única. Esse processo envolveu várias etapas e ensinou práticas valiosas.
+
+Primeiro, descomentei o código relacionado às temporadas e comentei o exemplo anterior com a lista de nomes. O objetivo era selecionar os top 5 episódios de uma série, consolidando todas as temporadas em uma única lista de episódios.
+
+Utilizei streams para evitar o uso de loops aninhados. Com a função `flatMap()`, consegui transformar uma lista de listas de episódios em uma única lista de episódios:
+
+```java
+List<DadosEpisodio> dadosEpisodios = temporadas.stream()
+    .flatMap(t -> t.episodios().stream())
+    .collect(Collectors.toList());
+```
+
+Com essa lista unificada, testei a diferença entre usar `collect(Collectors.toList())` e `toList()`. Aprendi que `toList()` retorna uma lista imutável, enquanto `collect(Collectors.toList())` retorna uma lista mutável. Isso ficou claro quando tentei adicionar um novo episódio à lista criada com `toList()` e recebi uma exceção. Com `collect()`, pude adicionar o item sem problemas:
+
+```java
+List<DadosEpisodio> dadosEpisodios = temporadas.stream()
+    .flatMap(t -> t.episodios().stream())
+    .collect(Collectors.toList());
+
+dadosEpisodios.add(new DadosEpisodio("teste", 3, "10", "2020-01-01"));
+dadosEpisodios.forEach(System.out::println);
+```
+
+Depois, foquei em ordenar a lista por avaliação de forma decrescente e selecionar os top 5 episódios. Para isso, usei `Comparator.comparing()` e `reversed()`, seguido de `limit(5)` e `forEach()` para imprimir os resultados:
+
+```java
+System.out.println("\n Top 5 episódios");
+dadosEpisodios.stream()
+    .sorted(Comparator.comparing(DadosEpisodio::avaliacao).reversed())
+    .limit(5)
+    .forEach(System.out::println);
+```
+
+Notei que alguns episódios sem avaliação apareciam no topo. Para resolver isso, filtrei os episódios antes da ordenação, removendo aqueles com avaliação "N/A":
+
+```java
+dadosEpisodios.stream()
+    .filter(e -> !e.avaliacao().equalsIgnoreCase("N/A"))
+    .sorted(Comparator.comparing(DadosEpisodio::avaliacao).reversed())
+    .limit(5)
+    .forEach(System.out::println);
+```
+
+Esse processo me ensinou a importância de tratar adequadamente os dados e considerar todas as nuances das operações com streams. Para finalizar, reconheci a necessidade de uma estrutura de dados mais robusta, incluindo informações da temporada no episódio e tratando a avaliação como um `double`, o que ajudará em futuras manipulações e cálculos.
+
+Foi uma experiência enriquecedora que me preparou para aplicar essas técnicas em projetos reais, garantindo eficiência e clareza no processamento de coleções de dados.
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+
+
+<details>
+  <summary> Para saber mais: uso de construtores personalizados em Java </summary>
+  
+  Sobre construtores personalizados em Java, uma técnica que considero extremamente útil para a criação e inicialização de objetos de maneira controlada e eficiente. Vou compartilhar um pouco da minha experiência e as práticas que aprendi.
+
+Antes de conhecer os construtores personalizados, eu criava objetos de forma manual, o que frequentemente resultava em código ineficiente e propenso a erros. Por exemplo, ao criar um objeto da classe `Carro`, eu fazia assim:
+
+```java
+Carro meuCarro = new Carro();
+meuCarro.setMarca("Toyota");
+meuCarro.setModelo("Corolla");
+meuCarro.setAno(2015);
+```
+
+Essa abordagem não só é verbosa, como também deixa espaço para a criação de objetos incompletos, pois nada impede que se esqueça de definir uma propriedade essencial.
+
+Com a introdução dos construtores personalizados, aprendi a criar objetos de uma forma muito mais robusta e segura. Por exemplo, a classe `Carro` com um construtor personalizado ficaria assim:
+
+```java
+public class Carro {
+    private String marca;
+    private String modelo;
+    private int ano;
+
+    // Construtor personalizado
+    public Carro(String marca, String modelo, int ano) {
+        this.marca = marca;
+        this.modelo = modelo;
+        this.ano = ano;
+    }
+}
+```
+
+Isso me permitiu criar um novo `Carro` de maneira direta e segura:
+
+```java
+Carro meuCarro = new Carro("Toyota", "Corolla", 2015);
+```
+
+Esse método garante que todos os carros criados têm todas as propriedades necessárias definidas, eliminando a possibilidade de erros por omissão.
+
+No entanto, o curso também abordou alguns desafios associados ao uso de construtores personalizados. Aprendi que a sobrecarga de construtores, ou seja, ter muitos construtores diferentes na mesma classe, pode tornar o código confuso e difícil de manter. Também aprendi sobre os problemas que podem surgir ao usar herança. Por exemplo, se a classe pai tem um construtor personalizado, a classe filha deve chamar explicitamente esse construtor, caso contrário, o compilador retornará um erro.
+
+Outro ponto importante que aprendi é sobre a necessidade de definir um construtor padrão (sem argumentos) se a classe possui construtores personalizados. Se não o fizermos, Java não criará um construtor padrão automaticamente, o que pode ser problemático se precisarmos criar um objeto sem inicializar suas propriedades.
+
+Em resumo, a experiência com construtores personalizados foi muito enriquecedora. Eles são uma ferramenta poderosa para garantir que os objetos sejam criados com todas as suas propriedades necessárias inicializadas, mas devem ser usados com cuidado para evitar problemas de sobrecarga e herança. A chave é usar essa ferramenta de maneira apropriada e manter o código simples e limpo.
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+</details>
+
+
+
+<details>
+  <summary> Para saber mais: Imutabilidade dos dados em Java </summary>
+
+  O conceito de imutabilidade dos dados, que se tornou uma parte fundamental do meu entendimento sobre a programação em Java. Imutabilidade refere-se à propriedade de um objeto ou valor que, uma vez criado, não pode ser alterado. Isso traz muitos benefícios, como a segurança e a confiabilidade do código, pois os dados imutáveis não podem ser acidentalmente modificados ou corrompidos.
+
+Uma das grandes vantagens que aprendi sobre a imutabilidade é sua capacidade de promover a concorrência segura em ambientes multithread. Cada thread pode trabalhar com cópias dos dados imutáveis sem interferir nas outras, o que é crucial para evitar problemas de sincronização. Além disso, a imutabilidade torna o código mais legível e facilita a manutenção, pois o fluxo de informações é mais claro e previsível.
+
+Em Java, aprendi a criar objetos imutáveis usando classes finais, atributos finais e métodos que não modificam o estado interno do objeto. Essa prática é essencial para desenvolver programas mais robustos e confiáveis. Por exemplo, a classe `String` em Java é imutável. Uma vez criada, uma instância de `String` não pode ser modificada. Outras classes imutáveis incluem as classes wrapper dos tipos primitivos, como `Integer`, `Double` e `Character`, e as enumerações.
+
+A API de coleções do Java também oferece suporte para criar coleções imutáveis através da classe utilitária `Collections`. Por exemplo:
+
+```java
+public class ImutabilidadeExemplo {
+    public static void main(String[] args) {
+        List<String> listaOriginal = new ArrayList<>();
+        listaOriginal.add("A");
+        listaOriginal.add("B");
+
+        List<String> listaImutavel = Collections.unmodifiableList(listaOriginal);
+
+        // Tentativa de adicionar um elemento na lista imutável resultará em exceção
+        listaImutavel.add("C"); // Lançará UnsupportedOperationException
+    }
+}
+```
+
+Aprendi que ao usar `Collections.unmodifiableList`, `Collections.unmodifiableSet` ou `Collections.unmodifiableMap`, podemos criar versões imutáveis de coleções existentes, tornando-as seguras para compartilhar e evitando a modificação acidental.
+
+Durante o curso, também vimos como utilizar streams em Java e como a operação final `toList()` gera uma lista imutável. Quando precisamos que a nova lista possa ser modificada, devemos usar `collect(Collectors.toList())`.
+
+Essa abordagem com streams é fundamental para garantir que os dados manipulados permaneçam consistentes e seguros, enquanto ainda permite flexibilidade quando necessário. No geral, a imutabilidade é uma ferramenta poderosa que aprendi a valorizar e aplicar em meus projetos para criar código mais seguro e fácil de manter.
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+</details>
+
+## <a name="nova-classe-dados-episodio"> Uma nova classe para lidar com os dados do episódio </a>
+
+- Criação da Classe `Episodio`
+
+Comecei criando a classe `Episodio` para armazenar os dados de episódios de séries. Primeiramente, precisei definir a estrutura da classe e os atributos necessários. No arquivo `Principal.java`, iniciei com uma lista de episódios:
+
+```java
+List<Episodio> episodios;
+```
+
+Como a classe `Episodio` ainda não existia, criei-a no pacote `model`:
+
+```java
+package br.com.alura.screenmatch.model;
+
+public class Episodio {
+}
+```
+
+Decidi que essa classe precisaria de métodos e validações, então optei por uma classe tradicional em vez de um record. Adicionei o primeiro atributo, o número da temporada:
+
+```java
+public class Episodio {
+    private Integer temporada;
+}
+```
+
+Em seguida, copiei os dados essenciais de outra classe, `DadosEpisodio`, para a classe `Episodio`, e fiz algumas modificações para adequá-los:
+
+```java
+public class Episodio {
+    private Integer temporada;
+    private String titulo;
+    private Integer numeroEpisodio;
+    private Double avaliacao;
+    private LocalDate dataLancamento;
+}
+```
+
+- Implementação dos Getters e Setters
+
+Para acessar e modificar esses atributos, gerei getters e setters:
+
+```java
+package br.com.alura.screenmatch.model;
+
+import java.time.LocalDate;
+
+public class Episodio {
+    private Integer temporada;
+    private String titulo;
+    private Integer numeroEpisodio;
+    private Double avaliacao;
+    private LocalDate dataLancamento;
+
+    public Integer getTemporada() {
+        return temporada;
+    }
+
+    public void setTemporada(Integer temporada) {
+        this.temporada = temporada;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public Integer getNumeroEpisodio() {
+        return numeroEpisodio;
+    }
+
+    public void setNumeroEpisodio(Integer numeroEpisodio) {
+        this.numeroEpisodio = numeroEpisodio;
+    }
+
+    public Double getAvaliacao() {
+        return avaliacao;
+    }
+
+    public void setAvaliacao(Double avaliacao) {
+        this.avaliacao = avaliacao;
+    }
+
+    public LocalDate getDataLancamento() {
+        return dataLancamento;
+    }
+
+    public void setDataLancamento(LocalDate dataLancamento) {
+        this.dataLancamento = dataLancamento;
+    }
+}
+```
+
+- Uso de Streams e Transformação de Dados
+
+Trabalhei com streams para transformar dados de temporadas em episódios:
+
+```java
+List<Episodio> episodios = temporadas.stream()
+    .flatMap(t -> t.episodios().stream()
+        .map(d -> new Episodio(t.numero(), d))
+    ).collect(Collectors.toList());
+```
+
+- Criação do Construtor Personalizado
+
+Criei um construtor na classe `Episodio` para inicializar os atributos corretamente:
+
+```java
+public Episodio(Integer numeroTemporada, DadosEpisodio dadosEpisodio) {
+    this.temporada = numeroTemporada;
+    this.titulo = dadosEpisodio.titulo();
+    this.numeroEpisodio = dadosEpisodio.numero();
+    try {
+        this.avaliacao = Double.valueOf(dadosEpisodio.avaliacao());
+    } catch (NumberFormatException ex) {
+        this.avaliacao = 0.0;
+    }
+    try {
+        this.dataLancamento = LocalDate.parse(dadosEpisodio.dataLancamento());
+    } catch (DateTimeParseException ex) {
+        this.dataLancamento = null;
+    }
+}
+```
+
+- Tratamento de Exceções
+
+Durante a execução, encontrei exceções ao converter avaliações e datas. Tratei essas exceções dentro do construtor para garantir que o programa continuasse a funcionar corretamente:
+
+```java
+try {
+    this.avaliacao = Double.valueOf(dadosEpisodio.avaliacao());
+} catch (NumberFormatException ex) {
+    this.avaliacao = 0.0;
+}
+
+try {
+    this.dataLancamento = LocalDate.parse(dadosEpisodio.dataLancamento());
+} catch (DateTimeParseException ex) {
+    this.dataLancamento = null;
+}
+```
+
+- Impressão dos Episódios
+
+Implementei o método `toString()` para facilitar a impressão dos dados dos episódios:
+
+```java
+@Override
+public String toString() {
+    return "temporada=" + temporada +
+           ", titulo='" + titulo + '\'' +
+           ", numeroEpisodio=" + numeroEpisodio +
+           ", avaliacao=" + avaliacao +
+           ", dataLancamento=" + dataLancamento;
+}
+```
+
+- Resultado Final
+
+Ao executar o programa, consegui transformar e imprimir os dados dos episódios corretamente, tratando as exceções de avaliações e datas ausentes:
+
+```java
+List<Episodio> episodios = temporadas.stream()
+    .flatMap(t -> t.episodios().stream()
+        .map(d -> new Episodio(t.numero(), d))
+    ).collect(Collectors.toList());
+
+episodios.forEach(System.out::println);
+```
+
+A criação da classe `Episodio` foi uma etapa importante para organizar e manipular os dados dos episódios de forma mais eficiente e segura. Aprendi a importância de criar classes bem estruturadas e a utilizar construtores personalizados para inicializar objetos de maneira adequada. Essas práticas me ajudaram a lidar com os dados de forma mais eficaz e a garantir a integridade e consistência dos objetos em Java.
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+
+## <a name="buscando-episodios-data"> Buscando episódios a partir de uma data </a>
+
+Durante o curso, tive a oportunidade de trabalhar com a manipulação de datas em Java. Um dos exercícios envolvia filtrar episódios de uma série a partir de uma determinada data fornecida pelo usuário. Abaixo, descrevo as etapas que segui e os conceitos que aprendi.
+
+Primeiro, implementei a lógica para imprimir todos os episódios e perguntar ao usuário a partir de que ano ele gostaria de visualizar os episódios. A entrada do ano foi lida e convertida para um formato de data utilizando `LocalDate`.
+
+```java
+List<Episodio> episodios = temporadas.stream()
+    .flatMap(t -> t.episodios().stream()
+            .map(d -> new Episodio(t.numero(), d)))
+    .collect(Collectors.toList());
+
+episodios.forEach(System.out::println);
+
+System.out.println("A partir de que ano você deseja ver os episódios? ");
+var ano = leitura.nextInt();
+leitura.nextLine();
+
+LocalDate dataBusca = LocalDate.of(ano, 1, 1);
+```
+
+Em seguida, filtrei a lista de episódios para incluir apenas aqueles lançados após a data informada pelo usuário. Utilizei o método `.isAfter()` para realizar essa verificação e adicionei um `null` check para evitar exceções.
+
+```java
+episodios.stream()
+    .filter(e -> e.getDataLancamento() != null && e.getDataLancamento().isAfter(dataBusca))
+    .forEach(e -> System.out.println(
+        "Temporada: " + e.getTemporada() +
+        " Episódio: " + e.getTitulo() +
+        " Data lançamento: " + e.getDataLancamento().format(formatador)
+    ));
+```
+
+Para melhorar a experiência do usuário, formatei a data no padrão brasileiro (dd/MM/yyyy) utilizando `DateTimeFormatter`.
+
+```java
+DateTimeFormatter formatador = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+episodios.stream()
+    .filter(e -> e.getDataLancamento() != null && e.getDataLancamento().isAfter(dataBusca))
+    .forEach(e -> System.out.println(
+        "Temporada: " + e.getTemporada() +
+        " Episódio: " + e.getTitulo() +
+        " Data lançamento: " + e.getDataLancamento().format(formatador)
+    ));
+```
+
+Ao executar o programa e filtrar episódios da série "Gilmore Girls" a partir de 2003, consegui visualizar corretamente os episódios no formato de data esperado.
+
+Essa prática me ajudou a entender melhor como trabalhar com streams e lambda expressions em Java, além de reforçar a importância da manipulação correta de datas e a formatação apropriada para o usuário final.
+
+A seguir, começaremos nossa jornada na ciência de dados em Java, onde analisaremos estatísticas de avaliações. Estou ansioso para aplicar esses conhecimentos em novos desafios!
+
+
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+<details>
+  <summary> Para saber mais: Trabalhando com datas </summary>
+
+  Durante o curso, aprendi a utilizar a API `java.time` introduzida no Java 8 para trabalhar com datas e horários de maneira mais eficiente e intuitiva. Vou compartilhar as principais práticas e conceitos que aprendi.
+
+- Padrões de Formatação de Data e Hora
+
+Entendi como utilizar os padrões de formatação de data e hora com strings específicas. A tabela a seguir mostra alguns desses padrões:
+
+| Letra | Componente data/hora    | Exemplo                   |
+|-------|-------------------------|---------------------------|
+| G     | Designador de era       | DC                        |
+| y     | Ano                     | 2010; 10                  |
+| M     | Mês no ano              | Julho; jul; 10            |
+| w     | Semana no ano           | 27                        |
+| W     | Semana no mês           | 2                         |
+| D     | Dia no ano              | 189                       |
+| d     | Dia no mês              | 10                        |
+| F     | Dia da semana no mês    | 2                         |
+| E     | Dia na semana           | Terça-feira; ter          |
+| a     | Marcador de am/pm       | PM                        |
+| H     | Hora no dia (0-23)      | 0                         |
+| k     | Hora no dia (1-24)      | 24                        |
+| K     | Hora em am/pm (0-11)    | 0                         |
+| h     | Hora em am/pm (1-12)    | 12                        |
+| m     | Minuto na hora          | 30                        |
+| s     | Segundo no minuto       | 55                        |
+| S     | Fração de um segundo    | 978                       |
+
+- Exemplo de Formatação de Data
+
+Para formatar a data atual, utilizei o seguinte código:
+
+```java
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class Datas {
+    public static void main(String[] args) {
+        String pattern = "E, dd MMM yyyy HH:mm:ss z";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        String date = simpleDateFormat.format(new Date());
+        System.out.println(date);
+    }
+}
+```
+
+- Utilizando LocalDate
+
+A classe `LocalDate` é utilizada para representar uma data sem fuso horário. Aqui estão algumas práticas que aprendi:
+
+- Data Atual
+
+```java
+import java.time.LocalDate;
+
+public class Datas {
+    public static void main(String[] args) {
+        LocalDate hoje = LocalDate.now();
+        System.out.println(hoje);
+    }
+}
+```
+
+O resultado é a data atual no formato `yyyy-MM-dd`, como "2022-11-19".
+
+- Criando Datas Específicas
+
+```java
+import java.time.LocalDate;
+import java.time.Month;
+
+public class Datas {
+    public static void main(String[] args) {
+        LocalDate aniversarioAlice = LocalDate.of(2005, Month.SEPTEMBER, 15);
+        System.out.println(aniversarioAlice);
+    }
+}
+```
+
+- Calculando Idade
+
+Para calcular a idade a partir de uma data de nascimento:
+
+```java
+import java.time.LocalDate;
+import java.time.Month;
+
+public class Datas {
+    public static void main(String[] args) {
+        LocalDate hoje = LocalDate.now();
+        LocalDate aniversarioAlice = LocalDate.of(2005, Month.SEPTEMBER, 15);
+        int idade = hoje.getYear() - aniversarioAlice.getYear();
+        System.out.println(idade);
+    }
+}
+```
+
+- Utilizando Period
+
+Para calcular a diferença detalhada entre duas datas:
+
+```java
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.Period;
+
+public class Datas {
+    public static void main(String[] args) {
+        LocalDate hoje = LocalDate.now();
+        LocalDate aniversarioAlice = LocalDate.of(2005, Month.SEPTEMBER, 15);
+        Period periodo = Period.between(hoje, aniversarioAlice);
+        System.out.println(periodo);
+    }
+}
+```
+
+- Utilizando LocalTime
+
+A classe `LocalTime` representa um horário:
+
+- Horário Atual
+
+```java
+import java.time.LocalTime;
+
+public class Horarios {
+    public static void main(String[] args) {
+        LocalTime agora = LocalTime.now();
+        System.out.println(agora);
+    }
+}
+```
+
+- Criando Horários Específicos
+
+```java
+import java.time.LocalTime;
+
+public class Horarios {
+    public static void main(String[] args) {
+        LocalTime aniversarioHoraAlice = LocalTime.of(22, 33, 15);
+        System.out.println(aniversarioHoraAlice);
+    }
+}
+```
+
+- Utilizando LocalDateTime
+
+A classe `LocalDateTime` combina data e hora:
+
+- Data e Hora Atuais
+
+```java
+import java.time.LocalDateTime;
+
+public class DataHorario {
+    public static void main(String[] args) {
+        LocalDateTime agora = LocalDateTime.now();
+        System.out.println(agora);
+    }
+}
+```
+
+- Formatando Datas e Horários
+
+Aprendi a utilizar `DateTimeFormatter` para formatar datas e horários em diversos padrões. Alguns exemplos de formatos incluem:
+
+| Formato                  | Exemplo                                |
+|--------------------------|----------------------------------------|
+| MM/dd/yyyy               | 19/11/2022                             |
+| dd-M-yyyy hh:mm:ss       | 19-11-22 12:07:23                      |
+| dd MMMM yyyy             | 19 de novembro de 2022                 |
+| dd MMMM yyyy zzzz        | 19 de novembro de 2022, Horário Padrão de Brasília |
+| E, dd MMM yyyy HH:mm:ss z| Sáb, 19 de novembro de 2022, 12:07:23 BRT |
+
+- Exemplo de Formatação com DateTimeFormatter
+
+```java
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+public class Formatando {
+    public static void main(String[] args) {
+        LocalDateTime hoje = LocalDateTime.now();
+        DateTimeFormatter formatador = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm:ss");
+        System.out.println(hoje.format(formatador));
+    }
+}
+```
+
+Isso formatou a data e hora para um formato mais familiar, como "19/11/2022 04:38:11".
+
+---
+
+Essas práticas me ajudaram a entender como trabalhar eficazmente com datas e horários em Java, utilizando as novas funcionalidades da API java.time. 
 
 <p align="right">
   <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
