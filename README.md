@@ -30,7 +30,15 @@
     - [Encadeando operações com streams](#encadeando-operacoes-streams)
     - [Identificando os top 5 melhores episódios](#identificando-top-5-episodios)
     - [Uma nova classe para lidar com os dados do episódio](#nova-classe-dados-episodio)
-    - [Buscando episódios a partir de uma data](#buscando-episodios-data)    
+    - [Buscando episódios a partir de uma data](#buscando-episodios-data)
+- [Explorando mais os fluxos e gerando estatísticas](#explorando-fluxos-gerando-estatisticas)
+    - [Exibindo as etapas de uma stream](#exibindo-etapas-stream)
+    - [Encontrando a primeira ocorrência de uma busca a uma coleção](#encontrando-primeira-ocorrencia)
+    - [Criando um mapa com dados por temporada](#criando-mapa-dados-temporada)
+    - [Coletando estatísticas](#coletando-estatisticas)
+- [Conclusão](#conclusao)
+- [Certificados](#certificados)
+- [Licença](#licenca)
 
 ## <a name="apresentacao"> Apresentação </a>
 
@@ -2032,3 +2040,383 @@ Essas práticas me ajudaram a entender como trabalhar eficazmente com datas e ho
 </p>
 
 </details>
+
+## <a name="explorando-fluxos-gerando-estatisticas"> Explorando mais os fluxos e gerando estatísticas </a>
+## <a name="exibindo-etapas-stream"> Exibindo as etapas de uma stream </a>
+
+## Minha jornada com Streams e depuração usando peek()
+
+O Streams e a função `peek()` para depuração. Compartilharei como utilizei essa ferramenta para desvendar os mistérios do processamento interno e otimizar meu código.
+
+- Desvendando os Streams
+
+Na última aula, mergulhamos no fascinante mundo dos Streams, explorando suas funcionalidades e a capacidade de realizar diversas operações em uma única linha. Essa eficiência, porém, trazia um desafio: como garantir a depuração precisa em meio a tantas operações encadeadas?
+
+- O Desafio da Depuração
+
+A complexidade das operações encadeadas em Streams gerava dúvidas: Será que o resultado está correto? Como acompanhar passo a passo o processamento? Como lidar com a encapsulação do Java, que nem sempre revela os detalhes da execução?
+
+- A Luz no Fim do Túnel: peek()!
+
+Em busca de soluções, descobrimos a função `peek()`, um farol capaz de iluminar o caminho da depuração. Essa ferramenta nos permite observar o que acontece em cada etapa do Stream, desvendando os segredos do processamento interno.
+
+- Explorando o Top 10 de The Boys
+
+Para colocar a teoria em prática, utilizei o Stream para buscar o Top 10 de episódios da série "The Boys". Comecei com um código simples, filtrando, ordenando e limitando os resultados, mas logo a necessidade de depuração se fez presente.
+
+- Decompondo o Processo
+
+Para desvendar os mistérios do processamento, adicionei a função `peek()` em cada etapa do Stream. Através de mensagens informativas, acompanhei passo a passo a filtragem, ordenação, limitação e mapeamento dos episódios.
+
+- Otimização Interna Revelada
+
+O Java otimizava o processamento de forma diferente do que eu imaginaria. Em vez de ordenar tudo primeiro e depois mapear, o processo era executado de forma mais eficiente, otimizando o desempenho.
+
+- Garantia de Resultados
+
+A depuração com `peek()` me proporcionou a segurança de que os dez melhores episódios, com as avaliações mais altas, estavam sendo selecionados e retornados em caixa alta.
+
+-----
+
+Com `peek()`, transformei a depuração de Streams em um processo simples e eficaz. Essa ferramenta me permitiu desvendar os segredos do processamento interno, garantir a qualidade do meu código e otimizar meu aprendizado.
+
+- Próximos Passos
+
+```java
+System.out.println("\nTop 10 episódios");
+dadosEpisodios.stream()
+        .filter(e -> !e.avaliacao().equalsIgnoreCase("N/A"))
+        .peek(e -> System.out.println("Primeiro filtro(N/A) " + e))
+        .sorted(Comparator.comparing(DadosEpisodio::avaliacao).reversed())
+        .peek(e -> System.out.println("Ordenação " + e))
+        .limit(10)
+        .peek(e -> System.out.println("Limite " + e))
+        .map(e -> e.titulo().toUpperCase())
+        .peek(e -> System.out.println("Mapeamento " + e))
+        .forEach(System.out::println);
+```
+
+- Observações
+
+* O código acima foi adaptado do exemplo original para melhor ilustrar a experiência de depuração com `peek()`.
+* As mensagens informativas (`Primeiro filtro(N/A)`, `Ordenação`, etc.) foram adicionadas utilizando a função `peek()` para acompanhar o processamento passo a passo.
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+<details>
+  <summary> Para saber mais: Entendendo o fluxo de execução de um Stream </summary>
+  
+  Uma ferramenta poderosa para manipular coleções de elementos de forma eficiente. Uma operação intermediária interessante que aprendi foi a função "peek". Ela permite espiar os elementos da stream sem modificá-los, útil para depuração. Com isso, consigo realizar operações em massa, como filtrar, transformar ou agregar, de maneira mais elegante e com menos chances de erros.
+
+A função peek é especialmente útil para imprimir os elementos da stream e verificar se as operações estão sendo realizadas conforme o esperado. Além disso, aprendi que o uso de Streams e peek pode tornar meu código mais legível e eficiente, além de permitir a paralelização das operações, o que pode acelerar a execução em certos casos.
+
+Um exemplo prático que explorei foi multiplicar cada elemento de uma lista por 2 e depois somar os resultados. Com a função peek, pude visualizar cada etapa do processo e garantir sua correção. Este código simples me permitiu entender melhor como as operações são aplicadas em cada elemento da stream, proporcionando uma experiência de aprendizado prática e valiosa.
+
+```java
+import java.util.Arrays;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        // Lista de números
+        List<Integer> numeros = Arrays.asList(1, 2, 3, 4, 5);
+
+        // Utilizando Streams para multiplicar cada número por 2 e depois somar os resultados
+        int soma = numeros.stream()
+                .peek(n -> System.out.println("Elemento: " + n))
+                .map(n -> n * 2)
+                .peek(n -> System.out.println("Conteúdo depois do map: " + n))
+                .reduce(0, (total, numero) -> total + numero);
+
+        // Imprimindo a soma dos números
+        System.out.println("A soma dos números é: " + soma);
+    }
+}
+```
+
+Agora, compreendo que a função peek pode ser aplicada em qualquer ponto da stream, permitindo-me inspecionar os elementos em diferentes estágios do processamento. 
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+</details>
+
+
+## <a name="encontrando-primeira-ocorrencia"> Encontrando a primeira ocorrência de uma busca a uma coleção </a>
+
+Durante o curso, explorei como encontrar a primeira ocorrência de uma busca em um conjunto de dados utilizando Streams em Java. Uma parte crucial foi entender como mapear os episódios de uma série de TV para facilitar a busca.
+
+Utilizando a função `findFirst()` em conjunto com um filtro, aprendi a buscar por trechos de texto em títulos de episódios, tornando a pesquisa mais flexível e eficiente. Com isso, pude construir um mecanismo robusto para encontrar episódios específicos, mesmo que apenas parte do título seja fornecida.
+
+```java
+System.out.println("Digite um trecho do título do episódio");
+var trechoTitulo = leitura.nextLine();
+Optional<Episodio> episodioBuscado = episodios.stream()
+        .filter(e -> e.getTitulo().contains(trechoTitulo))
+        .findFirst();
+if(episodioBuscado.isPresent()){
+    System.out.println("Episódio encontrado!");
+    System.out.println("Temporada: " + episodioBuscado.get().getTemporada());
+} else {
+    System.out.println("Episódio não encontrado!");
+}
+```
+
+Um desafio interessante surgiu ao lidar com a comparação de strings em caixa alta e caixa baixa. Ao aplicar `toUpperCase()` tanto nos títulos dos episódios quanto nos trechos de busca, consegui garantir que a comparação fosse feita de maneira insensível a maiúsculas e minúsculas, tornando a busca mais precisa e abrangente.
+
+```java
+.filter(e -> e.getTitulo().toUpperCase().contains(trechoTitulo.toUpperCase()))
+
+```
+
+Ao finalizar esta etapa, percebi o potencial de expansão da aplicação, considerando a implementação de recursos adicionais, como estatísticas por temporada, para enriquecer ainda mais a experiência do usuário.
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+<details>
+  <summary> Para saber mais: Utilizando um container de dados - Explorando o Optional </summary>
+  
+  Explorando o Optional. Este é um container especial que pode conter ou não um valor, introduzido no Java 8. Aprendi que o Optional é uma ferramenta valiosa para lidar com valores que podem ou não estar presentes, evitando assim erros como NullPointerException.
+
+Ao utilizar o Optional, adotei práticas que tornam meu código mais seguro e legível. Por exemplo, prefiro retornar Optional em vez de null em métodos que podem não ter um valor definido. Isso não apenas deixa minhas intenções claras, mas também evita possíveis erros. Além disso, aprendi a não utilizar o método Optional.get() sem verificar primeiro se o valor está presente, pois isso pode resultar em erros.
+
+Um exemplo prático que explorei foi criar um método que retorna um valor que pode ser null. Com o Optional, pude tornar essa operação mais segura, evitando possíveis problemas de NullPointerException.
+
+```java
+public Optional<String> getNome() {
+    // O nome pode ser null
+    return Optional.ofNullable(nome);
+}
+```
+
+Para acessar o valor dentro do Optional, utilizei métodos como ifPresent e orElse, garantindo assim que meu código lidasse de forma adequada tanto com valores presentes quanto com valores ausentes.
+
+```java
+Optional<String> optionalNome = getNome();
+
+optionalNome.ifPresent(System.out::println); // Só irá printar o nome se não for null
+
+String nome = optionalNome.orElse("Nome não disponível"); // Irá retornar "Nome não disponível" caso nome seja null
+```
+
+Compreendi que utilizar corretamente o Optional contribui para um código mais limpo e robusto, reduzindo a probabilidade de erros. 
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+</details>
+
+<details>
+  <summary> Para saber mais: Trabalhando em atividades paralelas </summary>
+  
+  Com atividades paralelas na programação, especialmente utilizando threads em Java. Entendi que as threads são unidades independentes de execução que permitem que diferentes partes do código sejam executadas simultaneamente, o que melhora significativamente o desempenho e a responsividade do programa.
+
+Um conceito fundamental que explorei foi o método `findAny()` em coleções de dados, uma operação útil para trabalhar com threads. Esse método é usado para encontrar qualquer elemento que satisfaça uma determinada condição em uma coleção, retornando um Optional que pode conter o elemento encontrado ou ser vazio.
+
+Para utilizar o `findAny()` com threads, aprendi a criar uma implementação de Predicate que define a condição que os elementos devem satisfazer. Em seguida, utilizei o método `parallelStream()` em uma coleção para criar uma stream paralela e chamei o `findAny()`, passando o Predicate como argumento.
+
+Explorando um exemplo prático, trabalhei com uma lista de números de 1 a 100, utilizando `parallelStream()` para filtrar os números que são múltiplos de 10 e o `findAny()` para encontrar qualquer elemento que atendesse a essa condição. Como a busca foi feita em paralelo, o resultado poderia variar a cada execução do programa.
+
+```java	
+public class ExemploFindAnyParallelStream {
+    public static void main(String[] args) {
+        List<Integer> numeros = new ArrayList<>();
+        for (int i = 1; i <= 100; i++) {
+            numeros.add(i);
+        }
+
+        // Utilizando parallelStream para encontrar um elemento qualquer em paralelo
+        Optional<Integer> numeroQualquer = numeros.parallelStream()
+                .filter(numero -> numero % 10 == 0) // Filtra os números que são múltiplos de 10
+                .findAny();
+
+        if (numeroQualquer.isPresent()) {
+            System.out.println("Encontrado: " + numeroQualquer.get());
+        } else {
+            System.out.println("Nenhum número encontrado.");
+        }
+    }
+}
+
+```
+
+Essa experiência me proporcionou uma compreensão mais profunda de como aproveitar as threads para melhorar o desempenho de operações em coleções de dados. Estou entusiasmado para aplicar esse conhecimento em projetos futuros e explorar ainda mais as possibilidades da programação paralela em Java.
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+</details>
+
+
+
+## <a name="criando-mapa-dados-temporada"> Criando um mapa com dados por temporada </a>
+
+Durante o curso, exploramos a importância de agregar funcionalidades significativas aos nossos aplicativos. Uma das discussões mais interessantes foi sobre a obtenção e exibição de avaliações por temporada de séries, algo que a API do IMDB não oferece diretamente.
+
+A ideia surgiu ao observarmos a diferença entre as avaliações de diferentes temporadas de uma série, como Game of Thrones. Por exemplo, a primeira temporada podia ter uma média alta, enquanto a última temporada tinha uma média decepcionante. Isso levou à conclusão de que seria útil para os usuários poderem visualizar as avaliações por temporada antes de assistir a uma série.
+
+Um dos desafios foi criar uma estrutura de dados para armazenar e apresentar essas avaliações de forma clara. Optamos por usar um mapa, associando cada temporada com sua respectiva média de avaliações.
+
+A implementação envolveu o uso de streams em Java, aproveitando recursos como o método `collect()` e a classe `Collectors` para agrupar os dados por temporada e calcular a média das avaliações.
+
+Além disso, discutimos a importância de filtrar os dados para garantir que apenas as avaliações válidas fossem consideradas, evitando distorções nas médias.
+
+```java	
+Map<Integer, Double> avaliacoesPorTemporada = episodios.stream()
+        .filter(e -> e.getAvaliacao() > 0.0)
+        .collect(Collectors.groupingBy(Episodio::getTemporada,
+                Collectors.averagingDouble(Episodio::getAvaliacao)));
+System.out.println(avaliacoesPorTemporada);
+
+```
+
+Ao final, conseguimos criar uma funcionalidade que enriqueceu nosso aplicativo, proporcionando aos usuários uma visão mais completa das avaliações das séries por temporada. Essa experiência destacou a importância de entender as necessidades dos usuários e implementar funcionalidades relevantes e úteis. Estou ansioso para aplicar esses conceitos em projetos futuros e continuar explorando as possibilidades da programação em Java.
+
+## <a name="coletando-estatisticas"> Coletando estatísticas </a>
+
+Vamos explorando como coletar e analisar uma variedade de métricas além da média por temporada. Descobrimos que a classe `DoubleSummaryStatistics` em Java pode facilitar esse processo, oferecendo uma maneira eficiente de calcular estatísticas como soma, média, mínimo e máximo.
+
+Aprendemos a usar streams em Java para agregar dados e coletar essas estatísticas diretamente em objetos do tipo `DoubleSummaryStatistics`, eliminando a necessidade de iterar manualmente sobre os elementos. Isso nos permitiu concentrar nossa atenção nas análises de interesse, como a média das avaliações, o melhor e o pior episódio, e a quantidade total de avaliações consideradas.
+
+Ao personalizarmos nossas impressões para exibir apenas as estatísticas relevantes, pudemos criar um retorno mais claro e organizado para nossos usuários, tornando a informação mais acessível e compreensível.
+
+Essa experiência não apenas expandiu nosso conhecimento sobre manipulação de dados em Java, mas também nos mostrou como as habilidades que desenvolvemos podem ser aplicadas em uma variedade de contextos do mundo real, desde análises de produtos em e-commerce até avaliações de desempenho de atendentes em empresas de telemarketing.
+
+No geral, essa jornada reforçou a importância de dominar conceitos como funções lambda, streams e manipulação de coleções, destacando como essas habilidades são essenciais para o dia a dia de um desenvolvedor Java. E mais do que isso, demonstrou como o aprendizado contínuo pode nos equipar para enfrentar desafios diversos e encontrar soluções inovadoras em nossos projetos futuros.
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+</details>
+
+<details>
+  <summary> Para saber mais: Classes que facilitam a geração de estatísticas </summary>
+  
+  Como simplificam a geração de estatísticas em Java, como DoubleSummaryStatistics e IntSummaryStatistics. Essas classes são especialmente úteis para calcular estatísticas básicas, como soma, média, valor mínimo e máximo, além do total de elementos em coleções de valores double e int.
+
+Por exemplo, ao lidar com uma lista de preços de produtos ou idades de estudantes, podemos usar essas classes para obter facilmente informações como média, mínimo, máximo e total de elementos.
+
+Um exemplo prático que exploramos foi o cálculo de estatísticas sobre a idade de estudantes. Criamos uma classe Aluno com um método para calcular a idade com base na data de nascimento. Em seguida, na classe Principal, usamos streams para mapear as idades dos alunos e calcular as estatísticas usando o método `summaryStatistics()`.
+
+No final, pude perceber como essas classes podem simplificar o processo de geração de estatísticas em Java, proporcionando métodos simples e eficientes para lidar com coleções de valores. Com esse conhecimento, estou mais preparado para realizar análises estatísticas em projetos futuros de forma mais eficaz e concisa.
+
+- Exemplo prático
+
+Usando as classes `DoubleSummaryStatistics` e `IntSummaryStatistics`. Vamos supor que temos uma lista de preços de produtos e queremos calcular algumas estatísticas básicas, como média, mínimo, máximo e total de elementos.
+
+```java
+import java.util.Arrays;
+import java.util.DoubleSummaryStatistics;
+import java.util.List;
+
+public class Principal {
+    public static void main(String[] args) {
+        // Lista de preços dos produtos
+        List<Double> precos = Arrays.asList(25.5, 30.0, 15.75, 50.25, 10.99);
+
+        // Calculando estatísticas
+        DoubleSummaryStatistics stats = precos.stream()
+                .mapToDouble(Double::doubleValue)
+                .summaryStatistics();
+
+        // Exibindo as estatísticas
+        System.out.println("Preço médio: " + stats.getAverage());
+        System.out.println("Preço mínimo: " + stats.getMin());
+        System.out.println("Preço máximo: " + stats.getMax());
+        System.out.println("Total de produtos: " + stats.getCount());
+    }
+}
+```
+
+Neste exemplo, começamos com uma lista de preços de produtos. Em seguida, usamos streams para mapear os preços para valores `double` e calculamos as estatísticas usando o método `summaryStatistics()`.
+
+Depois, exibimos as estatísticas, incluindo a média, o preço mínimo, o preço máximo e o total de produtos na lista.
+
+Essas classes são úteis para simplificar o processo de geração de estatísticas em Java, fornecendo métodos simples e eficientes para lidar com coleções de valores.
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+</details>
+
+<details>
+  <summary> Para saber mais: Uso avançado de Java Streams </summary>
+  
+  Descobri que essa característica oferece maneiras poderosas de processar dados de forma eficiente e elegante. À medida que mergulhei mais fundo, percebi que os Streams podem ser usados de várias maneiras para tornar meu código mais limpo e eficiente. Aqui está um resumo das práticas avançadas que explorei:
+
+1. **Streams Infinitos**: Aprendi sobre os Streams infinitos, que não têm um tamanho definido. Eles são úteis quando precisamos gerar sequências de números ou valores. Por exemplo, usando o método `iterate`, pude criar um Stream infinito que gera uma sequência numérica e, em seguida, limitá-lo a um número específico de elementos usando o método `limit`.
+
+   ```java
+   Stream.iterate(0, n -> n + 1)
+        .limit(10)
+        .forEach(System.out::println);
+   ```
+
+2. **FlatMap**: Entendi como o `flatMap` pode transformar um Stream de coleções em um Stream de elementos. Isso é especialmente útil quando lidamos com Streams de Streams ou queremos "aplanar" uma estrutura de dados aninhada.
+
+   ```java
+   List<List<String>> list = List.of(
+     List.of("a", "b"),
+     List.of("c", "d")
+   );
+
+   Stream<String> stream = list.stream()
+     .flatMap(Collection::stream);
+
+   stream.forEach(System.out::println);
+   ```
+
+3. **Redução de Streams**: Aprendi a utilizar o método `reduce()`, uma operação terminal que reduz o conteúdo de um Stream a um único valor. Por exemplo, para somar todos os números em uma lista, posso usar `reduce()` com `Integer::sum`.
+
+   ```java
+   List<Integer> numbers = List.of(1, 2, 3, 4, 5);
+   Optional<Integer> result = numbers.stream().reduce(Integer::sum);
+   result.ifPresent(System.out::println); //prints 15
+   ```
+
+Explorar esses conceitos avançados me permitiu perceber todo o potencial dos Java Streams. 
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+</details>
+
+## <a name="conclusão"> Conclusão </a>
+
+Exploramos o desenvolvimento de projetos usando Spring Boot e Maven, aprendendo a gerenciar dependências e manipular dados JSON. Também revisamos conceitos importantes como funções lambda, API de streams do Java, interfaces, generics e manipulação de datas.
+
+Aplicamos os conhecimentos adquiridos em um projeto prático utilizando a aplicação Screen Match, onde trabalhamos com coleções para representar séries e episódios.
+
+Os desafios práticos no final do curso foram uma oportunidade valiosa para consolidar o aprendizado e testar minhas habilidades.
+
+Saio do curso empolgado para aplicar essas novas habilidades em meus projetos futuros!
+
+## <a name="certificados"></a>Certificados
+
+- Curso de Java: trabalhando com lambdas, streams e Spring Framework
+
+[![Certificado](docs/src/img/certificadofrente.png)](https://cursos.alura.com.br/course/java-trabalhando-lambdas-streams-spring-framework)
+
+- Atrás
+
+[![Certificado](docs/src/img/certificadoatras.png)](https://cursos.alura.com.br/course/java-trabalhando-lambdas-streams-spring-framework)
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+## <a name="licença"> Licença </a>
+
+<a href="https://www.buymeacoffee.com/claudiomendonca" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+
+Copyright © 2024 <a href="https://www.claudiomendonca.eng.br" target="_blank">ClaudioMendonca.eng.br</a> . 
