@@ -3,10 +3,6 @@
 | ![Alura - ONE Oracle Next Education T6](/docs/src/img/logo_alura_one.png) |
 |:---:|
 | Curso ONE Oracle Next Education T6, uma parceria entre a Oracle e a Alura, onde estou me dedicando ao aprendizado de Java Web e banco de dados|
-| [![Apresentação](/docs/src/img/imagemapresentacao.gif)](https://alura.com.br) |
-
-## Link do Projeto
-- [API consulta](https://github.com/ClaudioMendonca-Eng/alura-screenmatch/)
 
 <a href="https://spring.io/"><img height="35" src="https://img.shields.io/badge/Spring-008000?style=for-the-badge&logo=spring&logoColor=white"></a>
 <a href="https://docs.oracle.com/en/java/javase/20/"><img height= "35" src= "https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white"></a>
@@ -2391,7 +2387,7 @@ Explorar esses conceitos avançados me permitiu perceber todo o potencial dos Ja
 
 </details>
 
-## <a name="conclusão"> Conclusão </a>
+## <a name="conclusao"> Conclusão </a>
 
 Exploramos o desenvolvimento de projetos usando Spring Boot e Maven, aprendendo a gerenciar dependências e manipular dados JSON. Também revisamos conceitos importantes como funções lambda, API de streams do Java, interfaces, generics e manipulação de datas.
 
@@ -2415,7 +2411,7 @@ Saio do curso empolgado para aplicar essas novas habilidades em meus projetos fu
   <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
 </p>
 
-## <a name="licença"> Licença </a>
+## <a name="licenca"> Licença </a>
 
 <a href="https://www.buymeacoffee.com/claudiomendonca" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
