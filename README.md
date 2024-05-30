@@ -19,8 +19,8 @@
 - [Um novo projeto utilizando o Spring Framework](#start-spring)
     - [Consumindo dados de séries](#consumindo-series)
     - [Desserializando dados](#desserializando-dados)
-    - [Modelando dados da série](#modelando-dados)
-- [Modelando os dados da aplicação](#modelando-dados)
+    - [Modelando dados da série](#modelando-dados-serie)
+- [Modelando os dados da aplicação](#modelando-dados-aplicacao)
     - [Modelando episódios](#modelando-episodios)
     - [Modelando temporadas](#modelando-temporadas)
     - [Criando o menu de interação com o usuário](#menu-interacao)
@@ -498,7 +498,7 @@ Para mais informações sobre as anotações do Jackson, você pode consultar a 
 
 </details>
 
-## <a name="modelando-dados"> Modelando dados da série </a>
+## <a name="modelando-dados-serie"> Modelando dados da série </a>
 
 A desserializar dados JSON em uma classe Java usando a biblioteca Jackson. Foi uma experiência valiosa que me ensinou a lidar com conversões de dados de forma eficiente e flexível. Aqui está um resumo das práticas que adotei e das lições aprendidas:
 
@@ -636,6 +636,282 @@ if (this.conteudo instanceof Integer c && valor instanceof Integer i) {
 Testei o funcionamento dos métodos genéricos com diferentes tipos de dados e observei como o compilador garante a segurança de tipo, garantindo que apenas operações válidas sejam realizadas.
 
 Explorar generics em Java foi uma experiência enriquecedora. Agora me sinto preparado para criar classes e métodos flexíveis e reutilizáveis, capazes de lidar com uma variedade de tipos de dados.
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+</details>
+
+## <a name="modelando-dados-aplicacao"> Modelando dados da aplicação </a>
+
+## <a name="modelando-episodios"> Modelando episódios </a>
+
+ sobre modelagem de dados em Java. Aqui está um resumo do que fiz e aprendi, com os trechos de código incluídos:
+
+ No curso, eu aprendi a modelar dados de séries e episódios usando Java e IntelliJ. Iniciamos criando uma classe Java para representar os dados de um episódio. Para isso, naveguei até o pacote Model no IntelliJ, cliquei com o botão direito, selecionei "New > Java Class" e nomeei o arquivo como DadosEpisodio, marcando a opção "Record".
+
+O IntelliJ facilita a integração com o GitHub, então adicionei o arquivo ao Git clicando em "Ok". A estrutura inicial do arquivo ficou assim:
+
+```java	
+package br.com.alura.screenmatch.model;
+
+public record DadosEpisodio() {
+}
+```
+
+Adicionei os atributos necessários para descrever um episódio: título, número do episódio, avaliação e data de lançamento. Como ainda não tínhamos certeza de como os dados de avaliação estavam chegando, deixamos como String por enquanto. A data de lançamento também foi representada como String.
+
+```java
+package br.com.alura.screenmatch.model;
+
+public record DadosEpisodio(String titulo,
+                            Integer numero,
+                            String avaliacao,
+                            String dataLancamento) {
+}
+
+```
+
+Para estabelecer a correspondência entre a API e a aplicação, utilizamos o JsonAlias. Isso foi feito adicionando anotações antes de cada atributo para mapear os campos JSON corretamente:
+
+```java
+package br.com.alura.screenmatch.model;
+
+import com.fasterxml.jackson.annotation.JsonAlias;
+
+public record DadosEpisodio(@JsonAlias("Title") String titulo,
+                            @JsonAlias("Episode") Integer numero,
+                            @JsonAlias("imdbRating") String avaliacao,
+                            @JsonAlias("Released") String dataLancamento) {
+}
+
+```
+Também configuramos JsonIgnoreProperties para ignorar propriedades desconhecidas que não estávamos representando:
+
+```java
+package br.com.alura.screenmatch.model;
+
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public record DadosEpisodio(@JsonAlias("Title") String titulo,
+                            @JsonAlias("Episode") Integer numero,
+                            @JsonAlias("imdbRating") String avaliacao,
+                            @JsonAlias("Released") String dataLancamento) {
+}
+
+```
+Depois de modelar os dados, fizemos a conversão na classe ScreenmatchApplication. Utilizamos um conversor para obter os dados JSON e mapear para a classe DadosEpisodio:
+
+```java
+
+DadosEpisodio dadosEpisodio = conversor.obterDados(json, DadosEpisodio.class);
+
+```
+Atualizamos a variável JSON usando um endpoint específico que incluía temporada e episódio. Depois imprimimos os dados do episódio para verificar se tudo estava correto:
+
+```java
+System.out.println(dados);
+json = consumoApi.obterDados("https://omdbapi.com/?t=gilmore+girls&season=1&episode=2&apikey=chaveAPI");
+DadosEpisodio dadosEpisodio = conversor.obterDados(json, DadosEpisodio.class);
+System.out.println(dadosEpisodio);
+
+```
+
+Por fim, executamos o projeto no IntelliJ, verificando que as informações gerais e detalhadas dos episódios estavam corretas. Discutimos a necessidade de modelar também as temporadas para fornecer informações completas sobre todas as temporadas e episódios de uma série.
+
+No próximo passo, aprenderemos a criar a classe DadosTemporada para representar essa dimensão adicional.
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+## <a name="modelando-temporadas"> Modelando temporadas </a>
+
+Sobre modelagem de dados em Java, focando na criação de uma classe para representar temporadas de séries. Aqui está um resumo do que fiz e aprendi, com os trechos de código incluídos:
+
+No curso, aprendi a criar uma classe chamada DadosTemporada para modelar as temporadas de uma série. A ideia era permitir que nosso programa acessasse detalhes de todos os episódios de cada temporada. Iniciamos criando a classe dentro do pacote Model, seguindo o padrão estabelecido:
+
+```java
+package br.com.alura.screenmatch.model;
+
+public record DadosTemporada() {
+}
+```
+
+Decidimos que a classe DadosTemporada deveria conter dois elementos principais: um número que identifica a temporada e uma lista contendo os episódios correspondentes. Assim, incluímos um valor inteiro e uma lista de DadosEpisodio:
+
+```java
+package br.com.alura.screenmatch.model;
+
+import java.util.List;
+
+public record DadosTemporada(Integer numero,
+                             List<DadosEpisodio> episodios) {
+}
+```
+
+Para mapear esses dados da API, utilizamos JsonAlias e JsonIgnoreProperties para ignorar propriedades desconhecidas:
+
+```java
+package br.com.alura.screenmatch.model;
+
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import java.util.List;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public record DadosTemporada(@JsonAlias("Season") Integer numero,
+                             @JsonAlias("Episodes") List<DadosEpisodio> episodios) {
+}
+```
+
+Na classe ScreenmatchApplication, alteramos o link para criar uma instância de DadosTemporada e imprimir os dados da temporada. Inicialmente, o código exibia detalhes de apenas uma temporada:
+
+
+```java
+System.out.println(dados);
+json = consumoApi.obterDados("https://omdbapi.com/?t=gilmore+girls&season=1&episode=2&apikey=codigoAPI");
+DadosEpisodio dadosEpisodio = conversor.obterDados(json, DadosEpisodio.class);
+System.out.println(dadosEpisodio);
+```
+
+Para obter informações de todas as temporadas, utilizamos uma estrutura de repetição for, iterando de 1 até o número total de temporadas:
+
+
+```java
+for (int i = 1; i <= dados.totalTemporadas(); i++) {
+    json = consumoApi.obterDados("https://www.omdbapi.com/?t=gilmore+girls&season=" + i + "&apikey=codigoAPI");
+    DadosTemporada dadosTemporada = conversor.obterDados(json, DadosTemporada.class);
+}
+```
+
+Criamos uma lista para armazenar as temporadas, adicionando cada temporada obtida da API a essa lista:
+
+
+```java
+List<DadosTemporada> temporadas = new ArrayList<>();
+
+for (int i = 1; i <= dados.totalTemporadas(); i++) {
+    json = consumoApi.obterDados("https://www.omdbapi.com/?t=gilmore+girls&season=" + i + "&apikey=codigoAPI");
+    DadosTemporada dadosTemporada = conversor.obterDados(json, DadosTemporada.class);
+    temporadas.add(dadosTemporada);
+}
+
+temporadas.forEach(System.out::println);
+```
+
+Ao rodar o projeto, conseguimos buscar e exibir todos os episódios de todas as temporadas, o que facilita a obtenção de informações completas sobre a série. A nossa aplicação agora é capaz de realizar essa tarefa de forma automática e rápida, diferentemente do processo manual no navegador.
+
+Estou ansiosa para adicionar novas funcionalidades ao programa, como a leitura de qualquer série, permitindo que possamos escolher os dados desejados e fazer o ScreenMatch crescer.
+
+<details>
+  <summary> Para saber mais: coleções em Java </summary>
+sobre a API de coleções e como ela é essencial para armazenar e manipular conjuntos de elementos de forma eficiente. Vou compartilhar minha experiência e práticas aprendidas com vocês.
+
+Primeiro, entendi que as coleções em Java fazem parte do pacote java.util e incluem diversas interfaces e classes que ajudam a organizar dados de diferentes maneiras. As principais interfaces de coleções que explorei foram:
+
+
+- List: Uma coleção ordenada que permite elementos duplicados e onde os elementos são acessados por índices.
+
+- Set: Uma coleção que não permite elementos duplicados e geralmente não possui uma ordem definida.
+
+- Queue: Representa uma fila onde os elementos são adicionados no final e removidos do início.
+
+- Map: Uma coleção de pares chave-valor, onde cada chave é única e mapeada para um valor correspondente.
+
+----
+
+| [![](https://mermaid.ink/img/pako:eNqllEGTmjAUgP9KJnsFB7CuazoeVNiVrba71emhsYcIj5oRCQ1hlXX8743IbtVqeyDDMCH53vfeZMLb4kCEgAmOYrEOFkwqNHVnCdJj6tMhB8lksCiQiNBAxDEEiosE3Uu2grWQS8QT9Mhe2A9CSCSEjUzTRP7U-9rrj7yDJsvnPyVLF2fLIZeVbNo_rPSor3S6eQyVDXW7yF-lMawgUZn-6qI-_VPFG6XHQdC_EDCgI56pCr2OufQ5hxz-y3l0Aqe2ATIbyNsoSMJMT010T3tSsqJMewV50EUlSwiPmIdzZnjQuPCrLOyKyaff9GEIWe37F0p-pBPFgmVFuOeGT_RJciG5KtDzUSb3gmlET6vxLjBjOhFSQbg_pjfqLONnOmTZ4h_Al-p4TrHxOfZEpxIgewf0RnXjVBED6qGIxzG5iWAehLdGpqRYArmxLKuam2seqgVx0o0RiFjIcu_Y0K9tGNQ2uLUNXm3DqLZhXMNweAcxyzIXIrT_4yORKDPjr0AcK1Uf_ybsI6TZ0gg28ArkivFQt7rtPmCG1ULf2xkmehoyuZzhWbLTHMuVmBRJgImSORg4T0OmwOVMd7EVJhGLM72asgSTLd5g4rTuGpZtt2-tTrvTdjrtpoELTO4arZbdfH8-NHcGfhVCG-yGVY1m27lzrH0AhFz_xeNDKy47cpniexmwr2P3G8y8xCA?type=png)](https://mermaid.live/edit#pako:eNqllEGTmjAUgP9KJnsFB7CuazoeVNiVrba71emhsYcIj5oRCQ1hlXX8743IbtVqeyDDMCH53vfeZMLb4kCEgAmOYrEOFkwqNHVnCdJj6tMhB8lksCiQiNBAxDEEiosE3Uu2grWQS8QT9Mhe2A9CSCSEjUzTRP7U-9rrj7yDJsvnPyVLF2fLIZeVbNo_rPSor3S6eQyVDXW7yF-lMawgUZn-6qI-_VPFG6XHQdC_EDCgI56pCr2OufQ5hxz-y3l0Aqe2ATIbyNsoSMJMT010T3tSsqJMewV50EUlSwiPmIdzZnjQuPCrLOyKyaff9GEIWe37F0p-pBPFgmVFuOeGT_RJciG5KtDzUSb3gmlET6vxLjBjOhFSQbg_pjfqLONnOmTZ4h_Al-p4TrHxOfZEpxIgewf0RnXjVBED6qGIxzG5iWAehLdGpqRYArmxLKuam2seqgVx0o0RiFjIcu_Y0K9tGNQ2uLUNXm3DqLZhXMNweAcxyzIXIrT_4yORKDPjr0AcK1Uf_ybsI6TZ0gg28ArkivFQt7rtPmCG1ULf2xkmehoyuZzhWbLTHMuVmBRJgImSORg4T0OmwOVMd7EVJhGLM72asgSTLd5g4rTuGpZtt2-tTrvTdjrtpoELTO4arZbdfH8-NHcGfhVCG-yGVY1m27lzrH0AhFz_xeNDKy47cpniexmwr2P3G8y8xCA) |
+|:---:|
+| [![](https://mermaid.ink/img/pako:eNqdkstuwjAQRX_FGrYBJYRAcMWiEpVaqUjl0S6asDDxpIlw4sg24iX-vSZBArVlUy-sa8-ZO7bHR0gkR6CQCrlNMqYMWYzjktjRzHqz-lKsysjk8a3ZmUYTVi0ppamUZDQiL0UlsMDSaLsakVk0l8ogv0JN2uwPdh4tFOJPckraHfK0M1hybWWbLKJnprMFWwlc3kHeo9e8XCO3YF35DvZRO10BG6jFzY0v1zZ7gTY_zYWgrRRXCe872ii5RtpyXfei29ucm4x2q52TSCFVHbt1mP3fobFJBNN6jCk5v3YqS9PW-QFp163Mw2_Cu0H8wCLgQIGqYDm3PT6eE2IwmW1BDNRKztQ6hrg8WY5tjJzvywSoURt0YFNxZnCcM9v_AmjKhLa7FSuBHmEHNOwE4TDoem7Y6w3Cvu87sAfqex0rbWQQBH1v4PrhyYGDlNbB67jN8MPQHfb8YdcB5LmRatL8wfor1iU-64TzOU7f8SHOzA?type=png)](https://mermaid.live/edit#pako:eNqdkstuwjAQRX_FGrYBJYRAcMWiEpVaqUjl0S6asDDxpIlw4sg24iX-vSZBArVlUy-sa8-ZO7bHR0gkR6CQCrlNMqYMWYzjktjRzHqz-lKsysjk8a3ZmUYTVi0ppamUZDQiL0UlsMDSaLsakVk0l8ogv0JN2uwPdh4tFOJPckraHfK0M1hybWWbLKJnprMFWwlc3kHeo9e8XCO3YF35DvZRO10BG6jFzY0v1zZ7gTY_zYWgrRRXCe872ii5RtpyXfei29ucm4x2q52TSCFVHbt1mP3fobFJBNN6jCk5v3YqS9PW-QFp163Mw2_Cu0H8wCLgQIGqYDm3PT6eE2IwmW1BDNRKztQ6hrg8WY5tjJzvywSoURt0YFNxZnCcM9v_AmjKhLa7FSuBHmEHNOwE4TDoem7Y6w3Cvu87sAfqex0rbWQQBH1v4PrhyYGDlNbB67jN8MPQHfb8YdcB5LmRatL8wfor1iU-64TzOU7f8SHOzA) |
+| [![](https://mermaid.ink/img/pako:eNplkU1PwzAMhv9KZK7dlH6mDUd2QYITHAYrhyxx12ppU6Wp9qX9d7J2ICQixbLePH4txxeQRiFwqLQ5yFpYR95XZUf8meMwbndW9DV5wR12ahbXm-fOoa2ExK9Z-dgQ8qTFMBByV37hKd7N3EkjWZOq0Zo_VLiVKgsGZ80e-QOl9J4vDo1yNY_6YyCNNnZ6mx3krccKK1IZ42_nFkNzRh7R3j3-J8I_SJx6BAJo0baiUX7ky62gBFdjiyVwnyph9yWU3dVzYnTm7dRJ4M6OGMDYK-Fw1Qj_He2P2IsO-AWOwNMljVMaFzTOk4yypAjgBDyMlknEsrQIC8aKnIb5NYCzMd4gXFKWRyxJ8jxJClpkLABUjTP2dd7ItJipxedUUAk94PUbaKqEuw?type=png)](https://mermaid.live/edit#pako:eNplkU1PwzAMhv9KZK7dlH6mDUd2QYITHAYrhyxx12ppU6Wp9qX9d7J2ICQixbLePH4txxeQRiFwqLQ5yFpYR95XZUf8meMwbndW9DV5wR12ahbXm-fOoa2ExK9Z-dgQ8qTFMBByV37hKd7N3EkjWZOq0Zo_VLiVKgsGZ80e-QOl9J4vDo1yNY_6YyCNNnZ6mx3krccKK1IZ42_nFkNzRh7R3j3-J8I_SJx6BAJo0baiUX7ky62gBFdjiyVwnyph9yWU3dVzYnTm7dRJ4M6OGMDYK-Fw1Qj_He2P2IsO-AWOwNMljVMaFzTOk4yypAjgBDyMlknEsrQIC8aKnIb5NYCzMd4gXFKWRyxJ8jxJClpkLABUjTP2dd7ItJipxedUUAk94PUbaKqEuw) |
+
+
+<a href="https://data-flair.training/blogs/collection-framework-in-java/">Hierarchy of Collection Framework in Java </a>
+</p>
+
+
+- Todas as interfaces e classes são encontradas dentro do pacote (package) `java.util`.
+- Embora a interface `Map` não ser filha direta da interface `Collection` ela também é considerada uma coleção devido a sua função.
+
+| Modificador e Tipo               | Método                                | Descrição                                                                                          |
+|----------------------------------|---------------------------------------|----------------------------------------------------------------------------------------------------|
+| boolean                          | add(E e)                              | Assegura que esta coleção contém o elemento especificado (operação opcional).                      |
+| boolean                          | addAll(Collection<? extends E> c)     | Adiciona todos os elementos da coleção especificada a esta coleção (operação opcional).            |
+| void                             | clear(  )                               | Remove todos os elementos desta coleção (operação opcional).                                       |
+| boolean                          | contains(Object o)                    | Retorna true se esta coleção contiver o elemento especificado.                                     |
+| boolean                          | containsAll(Collection<?> c)          | Retorna true se esta coleção contiver todos os elementos na coleção especificada.                  |
+| boolean                          | equals(Object o)                      | Compara o objeto especificado com esta coleção para igualdade.                                     |
+| int                              | hashCode(  )                            | Retorna o valor do hash code para esta coleção.                                                    |
+| boolean                          | isEmpty(  )                             | Retorna true se esta coleção não contiver elementos.                                               |
+| Iterator<E>                      | iterator(  )                            | Retorna um iterador sobre os elementos desta coleção.                                              |
+| default Stream<E>                | parallelStream(  )                      | Retorna um possivelmente paralelo Stream com esta coleção como sua fonte.                          |
+| boolean                          | remove(Object o)                      | Remove uma única instância do elemento especificado desta coleção, se estiver presente (opcional). |
+| boolean                          | removeAll(Collection<?> c)            | Remove todos os elementos desta coleção que também estão contidos na coleção especificada (opcional).|
+| default boolean                  | removeIf(Predicate<? super E> filter) | Remove todos os elementos desta coleção que satisfazem o predicado dado.                           |
+| boolean                          | retainAll(Collection<?> c)            | Retém apenas os elementos nesta coleção que estão contidos na coleção especificada (opcional).      |
+| int                              | size(  )                                | Retorna o número de elementos nesta coleção.                                                       |
+| default Spliterator<E>           | spliterator(  )                         | Cria um Spliterator sobre os elementos nesta coleção.                                              |
+| default Stream<E>                | stream(  )                              | Retorna um Stream sequencial com esta coleção como sua fonte.                                      |
+| Object[  ]                         | toArray(  )                             | Retorna um array contendo todos os elementos desta coleção.                                        |
+| default <T> T[  ]                  | toArray(IntFunction<T[  ]> generator)   | Retorna um array contendo todos os elementos desta coleção, usando a função geradora fornecida.    |
+| <T> T[  ]                          | toArray(T[  ] a)                        | Retorna um array contendo todos os elementos desta coleção; o tipo em tempo de execução do array retornado é o do array especificado. |
+
+
+<p align="center">
+<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html">Method Sumary Collection Interface</a>
+</p>
+
+---
+
+Dentre essas interfaces, a que mais utilizei foi a List. Ela define uma sequência ordenada de elementos e oferece muita flexibilidade para adicionar, remover e acessar elementos. Além disso, permite a duplicação de elementos e facilita a manipulação dos dados com laços de repetição, como o for-each.
+
+Aqui está um exemplo prático que implementei utilizando a interface List:
+
+```java
+Copiar código
+import java.util.List;
+import java.util.ArrayList;
+
+public class ExemploList {
+    public static void main(String[] args) {
+        // Criando um objeto do tipo List para armazenar números inteiros
+        List<Integer> numeros = new ArrayList<>();
+
+        // Adicionando elementos ao List
+        numeros.add(10);
+        numeros.add(20);
+        numeros.add(30);
+
+        // Acessando elementos do List
+        System.out.println("Primeiro elemento: " + numeros.get(0)); // Saída: 10
+        System.out.println("Segundo elemento: " + numeros.get(1)); // Saída: 20
+        System.out.println("Terceiro elemento: " + numeros.get(2)); // Saída: 30
+
+        // Percorrendo os elementos do List
+        for (Integer numero : numeros) {
+            System.out.println(numero);
+        }
+
+        // Removendo um elemento do List
+        numeros.remove(1); // Remove o elemento de índice 1 (20)
+
+        // Verificando o tamanho do List
+        System.out.println("Tamanho do List: " + numeros.size()); // Saída: 2
+    }
+}
+```
+Também explorei outras coleções como Set e Map. O Set é útil quando precisamos garantir que não existam elementos duplicados. Já o Map é excelente para associar chaves a valores, permitindo a recuperação rápida de um elemento através de sua chave.
+
+As coleções em Java são extremamente úteis em várias situações, como armazenar dados em memória, realizar operações de busca, ordenação e filtragem. Elas nos ajudam a organizar e manipular grandes quantidades de dados de forma eficiente e elegante.
+
+Se você deseja se aprofundar mais no assunto, recomendo fortemente o curso "Java Collections: Dominando Listas, Sets e Mapas" da Alura. Ele oferece uma visão detalhada e prática das coleções em Java.
+
+[Java Collections: Dominando Listas, Sets e Mapas](https://cursos.alura.com.br/course/java-collections)
 
 <p align="right">
   <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
