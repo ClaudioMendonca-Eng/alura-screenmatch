@@ -24,7 +24,7 @@
     - [Modelando episódios](#modelando-episodios)
     - [Modelando temporadas](#modelando-temporadas)
     - [Criando o menu de interação com o usuário](#menu-interacao)
-    - [Buscando dados completos da série](#buscando-dados)
+    - [Buscando dados completos da série](#buscando-dados-completos)
     - [Trabalhando na coleção de dados](#trabalhando-colecao)
 - [Manipulando com fluxos as coleções de dados](#)
 
@@ -810,7 +810,8 @@ Estou ansiosa para adicionar novas funcionalidades ao programa, como a leitura d
 
 <details>
   <summary> Para saber mais: coleções em Java </summary>
-sobre a API de coleções e como ela é essencial para armazenar e manipular conjuntos de elementos de forma eficiente. Vou compartilhar minha experiência e práticas aprendidas com vocês.
+
+Sobre a API de coleções e como ela é essencial para armazenar e manipular conjuntos de elementos de forma eficiente. Vou compartilhar minha experiência e práticas aprendidas com vocês.
 
 Primeiro, entendi que as coleções em Java fazem parte do pacote java.util e incluem diversas interfaces e classes que ajudam a organizar dados de diferentes maneiras. As principais interfaces de coleções que explorei foram:
 
@@ -912,6 +913,390 @@ As coleções em Java são extremamente úteis em várias situações, como arma
 Se você deseja se aprofundar mais no assunto, recomendo fortemente o curso "Java Collections: Dominando Listas, Sets e Mapas" da Alura. Ele oferece uma visão detalhada e prática das coleções em Java.
 
 [Java Collections: Dominando Listas, Sets e Mapas](https://cursos.alura.com.br/course/java-collections)
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+</details>
+
+
+## <a name="menu-interacao"> Menu de interação </a>
+
+Aprendi a criar uma aplicação Java interativa usando o IntelliJ, onde o usuário pode buscar informações de séries através de uma API. Abaixo, vou compartilhar as práticas e experiências que obtive ao longo do curso.
+
+Primeiro, abordamos a necessidade de permitir que o usuário digite o nome da série desejada diretamente no IntelliJ, para que a aplicação possa buscar qualquer série disponível na API. Entendemos a importância de criar um menu de interação com o usuário e de dividir as responsabilidades do código para facilitar a manutenção e melhorar a legibilidade.
+
+Para isso, criei uma nova classe chamada `Principal` dentro de um pacote `principal`. Esta classe é responsável por exibir o menu e lidar com as interações do usuário. Abaixo está o código inicial da classe `Principal`:
+
+```java
+package br.com.alura.screenmatch.principal;
+
+public class Principal {
+
+}
+```
+
+Comecei adicionando um método `exibMenu` para exibir o menu ao usuário e solicitar a entrada do nome da série:
+
+```java
+package br.com.alura.screenmatch.principal;
+
+public class Principal {
+    public void exibMenu(){
+        System.out.println("Digite o nome da série para a busca");
+    }
+}
+```
+
+Para capturar a entrada do usuário, utilizei a classe `Scanner`:
+
+```java
+package br.com.alura.screenmatch.principal;
+
+import java.util.Scanner;
+
+public class Principal {
+
+    // Adicione a chave da API do OMDB
+	@Value("${api.key}")
+    private String apiKey;
+
+    private Scanner leitura = new Scanner(System.in);
+
+    public void exibMenu(){
+        System.out.println("Digite o nome da série para a busca");
+        var nomeSerie = leitura.nextLine();
+    }
+}
+```
+
+Depois, defini constantes para partes fixas do endereço da API, como o URL base e a chave da API:
+
+```java
+package br.com.alura.screenmatch.principal;
+
+import java.util.Scanner;
+
+public class Principal {
+
+    // Adicione a chave da API do OMDB
+	@Value("${api.key}")
+    private String apiKey;
+
+    private Scanner leitura = new Scanner(System.in);
+    
+    private final String ENDERECO = "https://www.omdbapi.com/?t=";
+    private final String API_KEY = "&apikey=" + apiKey;
+
+
+    public void exibMenu(){
+        System.out.println("Digite o nome da série para a busca");
+        var nomeSerie = leitura.nextLine();
+        //"https://www.omdbapi.com/?t=gilmore+girls&apikey=6585022c"
+    }
+}
+```
+
+Para formar o URL completo da API, concatenei as partes constantes com o nome da série digitado pelo usuário e substituí espaços por sinais de adição (`+`):
+
+```java
+package br.com.alura.screenmatch.principal;
+
+import java.util.Scanner;
+
+public class Principal {
+
+    // Adicione a chave da API do OMDB
+	@Value("${api.key}")
+    private String apiKey;
+
+    private Scanner leitura = new Scanner(System.in);
+    
+    private final String ENDERECO = "https://www.omdbapi.com/?t=";
+    private final String API_KEY = "&apikey=" + apiKey;
+
+
+    public void exibMenu(){
+        System.out.println("Digite o nome da série para a busca");
+        var nomeSerie = leitura.nextLine();
+        var enderecoCompleto = ENDERECO + nomeSerie.replace(" ", "+") + API_KEY;
+        System.out.println(enderecoCompleto);
+    }
+}
+```
+
+Implementei a chamada à API usando a classe `ConsumoApi`, instanciando essa classe dentro de `Principal`:
+
+```java
+package br.com.alura.screenmatch.principal;
+
+import java.util.Scanner;
+
+public class Principal {
+
+    // Adicione a chave da API do OMDB
+	@Value("${api.key}")
+    private String apiKey;
+
+    private Scanner leitura = new Scanner(System.in);
+    private ConsumoApi consumo = new ConsumoApi();
+    
+    private final String ENDERECO = "https://www.omdbapi.com/?t=";
+    private final String API_KEY = "&apikey=" + apiKey;
+
+    public void exibMenu(){
+        System.out.println("Digite o nome da série para a busca");
+        var nomeSerie = leitura.nextLine();
+        var json = consumo.obterDados(ENDERECO + nomeSerie.replace(" ", "+") + API_KEY);
+        System.out.println(json);
+    }
+}
+```
+
+Ao longo do curso, compreendi a importância de modular o código, utilizando boas práticas para garantir a legibilidade e manutenção.
+
+<detais>
+  <summary> Para saber mais: Constantes em Java </summary>
+
+  A importância das constantes na programação, especialmente em Java, e como utilizá-las corretamente para melhorar a legibilidade, manutenção e consistência do código.
+
+Primeiro, compreendi que as constantes são valores fixos e imutáveis que não devem ser alterados durante a execução do programa. Elas são declaradas utilizando a palavra-chave `final` e, por boas práticas, são nomeadas com letras maiúsculas e separadas por underscore (_), seguindo o padrão conhecido como "snake_case". Isso ajuda a tornar o código mais claro e compreensível para outros desenvolvedores.
+
+Por exemplo, ao declarar constantes, fazemos assim:
+
+```java
+final int ANO_ATUAL = 2022;
+final String NOME_EMPRESA = "Alura";
+```
+
+Nesses exemplos, `ANO_ATUAL` e `NOME_EMPRESA` são constantes que armazenam um valor inteiro e uma string, respectivamente. O uso da palavra-chave `final` indica que essas variáveis não podem ter seu valor alterado após a atribuição inicial.
+
+Além disso, aprendi que é uma boa prática declarar constantes como `static` quando elas pertencem a uma classe e são compartilhadas por vários objetos. Dessa forma, as constantes podem ser acessadas diretamente através do nome da classe, sem a necessidade de instanciar um objeto. Veja um exemplo de como isso pode ser feito:
+
+```java
+public class ExemploConstantes {
+    public static final int ANO_ATUAL = 2022;
+    public static final String NOME_EMPRESA = "Alura";
+}
+```
+
+Com as constantes declaradas como `static`, podemos acessá-las diretamente na classe `ExemploConstantes`. Veja como isso é feito no método `main`:
+
+```java
+public class Principal {
+    public static void main(String[] args) {
+        System.out.println("Eu trabalho na empresa " + ExemploConstantes.NOME_EMPRESA);
+    }
+}
+```
+
+Durante o curso, aplicamos essas boas práticas na construção de um menu de interação com o usuário. Criamos uma aplicação onde o usuário pode digitar o nome de uma série e a aplicação busca informações dessa série através de uma API. Aqui está um exemplo do código que desenvolvemos, incluindo o uso de constantes:
+
+```java
+package br.com.alura.screenmatch.principal;
+
+import java.util.Scanner;
+
+public class Principal {
+
+    // Adicione a chave da API do OMDB
+	@Value("${api.key}")
+    private String apiKey;
+
+    private Scanner leitura = new Scanner(System.in);
+    private ConsumoApi consumo = new ConsumoApi();
+    
+    private final String ENDERECO = "https://www.omdbapi.com/?t=";
+    private final String API_KEY = "&apikey=" + apiKey;
+
+    public void exibMenu() {
+        System.out.println("Digite o nome da série para a busca");
+        var nomeSerie = leitura.nextLine();
+        var json = consumo.obterDados(ENDERECO + nomeSerie.replace(" ", "+") + API_KEY);
+        System.out.println(json);
+    }
+}
+```
+
+Neste código, as constantes `ENDERECO` e `API_KEY` são usadas para formar a URL da API. A constante `ENDERECO` armazena a parte fixa do endereço da API, enquanto `API_KEY` armazena a chave da API. Ambas são declaradas como `static final`, indicando que são constantes compartilhadas e imutáveis.
+
+Aprendi que o uso de constantes traz vários benefícios, como facilitar a manutenção do código, evitar erros de digitação e tornar o código mais legível. Além disso, elas ajudam a evitar a repetição de valores em diferentes partes do código, promovendo a consistência e a reutilização. A experiência prática durante o curso foi extremamente valiosa para consolidar esses conceitos e aplicá-los efetivamente em meus projetos futuros.
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+</details>
+
+
+## <a name="buscando-dados-completos"> Buscando dados completos da série </a>
+
+Durante o curso, aprendi várias práticas essenciais de programação e como aplicá-las em projetos reais. Uma das principais lições foi sobre o uso de constantes para tornar o código mais legível e fácil de manter. Utilizei a palavra-chave `final` para declarar constantes imutáveis e `static` para aquelas compartilhadas entre objetos, garantindo um código mais organizado e menos propenso a erros.
+
+Aqui está um exemplo de como declarei constantes no projeto:
+
+```java
+
+    
+    private final String ENDERECO = "https://www.omdbapi.com/?t=";
+    private final String API_KEY = "&apikey=" + apiKey;
+
+
+```
+
+Apliquei esses conceitos no desenvolvimento de uma aplicação Java para buscar informações de séries através da API do OMDB. Desenvolvi a classe `Principal`, que interage com o usuário para obter o nome da série e faz a busca na API. Veja como ficou o código:
+
+```java
+package br.com.alura.screenmatch.principal;
+
+import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Principal {
+
+    // Adicione a chave da API do OMDB
+	@Value("${api.key}")
+    private String apiKey;
+
+    private Scanner leitura = new Scanner(System.in); 
+    private ConsumoApi consumo = new ConsumoApi();
+    private ConverteDados conversor = new ConverteDados();
+
+    private final String ENDERECO = "https://www.omdbapi.com/?t=";
+    private final String API_KEY = "&apikey=" + apiKey;
+
+    public void exibMenu(){
+        System.out.println("Digite o nome da série para a busca");
+        var nomeSerie = leitura.nextLine();
+        var json = consumo.obterDados(ENDERECO + nomeSerie.replace(" ", "+") + API_KEY);
+        DadosSerie dados = conversor.obterDados(json, DadosSerie.class);
+        System.out.println(dados);
+        
+        List<DadosTemporada> temporadas = new ArrayList<>();
+        
+        for(int i = 1; i <= dados.totalTemporadas(); i++) {
+            json = consumo.obterDados(ENDERECO + nomeSerie.replace(" ", "+") + "&season=" + i + API_KEY);
+            DadosTemporada dadosTemporada = conversor.obterDados(json, DadosTemporada.class);
+            temporadas.add(dadosTemporada);
+        }
+        temporadas.forEach(System.out::println);
+    }
+}
+```
+
+Durante o curso, aprendi a transferir lógica entre classes para melhorar a coesão e reduzir o acoplamento, um princípio fundamental de design de software. Isso envolveu mover a lógica de busca e conversão de dados da `ScreenMatchApplication` para a `Principal`, simplificando o método `run` e eliminando importações desnecessárias.
+
+Na `ScreenMatchApplication`, simplifiquei a classe para apenas instanciar e chamar o método `exibMenu` da `Principal`:
+
+```java
+package br.com.alura.screenmatch.principal;
+
+Principal principal = new Principal();
+principal.exibeMenu();
+
+```
+
+Esse refinamento resultou em um código mais modular e fácil de entender. Ao executar o projeto, inseri o nome de uma série e a aplicação retornou corretamente os dados da série, incluindo informações detalhadas sobre as temporadas. Testei com a série "Never Have I Ever" e obtive os dados esperados:
+
+```
+Digite o nome da série para busca:
+Never Have I Ever
+DadosSerie[titulo=Never Have I Ever, totalTemporadas=4, avaliacao=7.9]
+```
+
+ Agora, posso facilmente acessar e manipular os dados das séries, tornando a aplicação robusta e escalável.
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+
+## <a name="trabalhando-colecao"> Trabalhando na coleção de dados </a>
+
+Em manipulação e exibição de dados, especificamente no contexto de uma coleção de temporadas e episódios de séries. Aqui está um resumo das práticas que aprendi e implementei:
+
+- Coleção de Dados e Exibição de Informações
+
+- Iteração e Exibição de Títulos
+
+Inicialmente, discutimos a importância de considerar a experiência do usuário ao acessar dados. Ao invés de mostrar todos os detalhes dos episódios, focamos em exibir apenas os títulos. Comecei implementando um loop para percorrer as temporadas e os episódios, imprimindo apenas os títulos dos episódios.
+
+```java
+for (int i = 0; i < dados.totalTemporadas(); i++) {
+    List<DadosEpisodio> episodiosTemporada = temporadas.get(i).episodios();
+    for (int j = 0; j < episodiosTemporada.size(); j++) {
+        System.out.println(episodiosTemporada.get(j).titulo());
+    }
+}
+```
+
+- Refatoração com Lambdas
+
+Conforme avançávamos, percebi que essa abordagem com dois loops aninhados poderia ser melhorada. Utilizando os recursos do Java 8, como lambdas e métodos de referência, refatorei o código para ser mais conciso e legível.
+
+```java
+temporadas.forEach(t -> t.episodios().forEach(e -> System.out.println(e.titulo())));
+```
+
+- Otimização e Compreensão de Lambdas
+
+Aprender sobre lambdas foi um ponto crucial. As lambdas nos permitem usar funções anônimas para manipular coleções de forma mais eficiente. Por exemplo, ao invés de usar um loop tradicional, utilizei `forEach` para iterar sobre as temporadas e episódios.
+
+```java
+temporadas.forEach(System.out::println);
+temporadas.forEach(t -> t.episodios().forEach(e -> System.out.println(e.titulo())));
+```
+
+- Aplicando o Conhecimento na Prática
+
+Testei e validei essas implementações executando o programa e observando os resultados no terminal, garantindo que os títulos dos episódios fossem exibidos corretamente.
+
+```java
+Digite o nome da série para busca
+Never Have I Ever
+...
+```
+
+-Explorando Novos Recursos
+
+Aprofundamos ainda mais nosso entendimento explorando outros recursos poderosos do Java, como streams. Esses permitem realizar operações complexas em coleções de dados de forma fluida e eficiente, representando um avanço significativo na maneira de manipular dados em Java.
+
+<p align="right">
+  <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
+</p>
+
+
+<detais>
+  <summary> Para saber mais: Funções Lambda em Java </summary>
+  Durante o curso, aprendi sobre as funções lambda em Java e como elas podem simplificar e melhorar a legibilidade do código. Aqui está um resumo do que aprendi:
+
+- Entendendo Funções Lambda
+
+As funções lambda são formas de definir funções diretamente no local onde serão usadas, sem precisar dar um nome a elas. Isso é útil quando precisamos de uma função que será usada apenas uma vez.
+
+- Sintaxe das Funções Lambda em Java
+
+Em Java, as funções lambda são definidas como `(argumentos) -> { corpo-da-função }`. Por exemplo, podemos definir uma função lambda que some dois números como `(a, b) -> { return a + b; }`.
+
+- Interfaces Funcionais
+
+As funções lambda são comumente usadas com interfaces funcionais, que contêm apenas um único método. A função lambda fornece a implementação desse método único.
+
+- Exemplos de Uso
+
+Um exemplo prático de uso de funções lambda é filtrar e imprimir elementos de uma lista. Por exemplo, podemos usar uma função lambda para imprimir apenas os números pares de uma lista de números.
+
+```java
+List<Integer> lista = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
+
+lista.stream().filter(i -> i % 2 == 0).forEach(System.out::println);
+```
+
+- Simplificando o Código
+
+Comparado a abordagens tradicionais, o uso de funções lambda torna o código mais conciso e legível. Ao filtrar e imprimir números pares, a sintaxe das funções lambda simplifica o processo.
 
 <p align="right">
   <a href="#topo" style="text-decoration: none; background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Voltar ao Topo</a>
