@@ -38,7 +38,7 @@
 
 ## <a name="apresentacao"> Apresentação </a>
 
-Este repositório contém os códigos desenvolvidos durante o curso de Java Web e banco de dados, ministrado pela Alura, no programa ONE Oracle Next Education T6.
+Este repositório contém os códigos desenvolvidos durante o curso de Java Web e banco de dados, ministrado pela Alura, no programa ONE Oracle Next Education T6 com base no [repositório da Alura](https://github.com/alura-cursos/3257-java-screenmatch-com-spring).
 
 Oi! Vou compartilhar com você a minha experiência e as práticas que aprendi durante o curso de Spring Boot API que fiz recentemente.
 
