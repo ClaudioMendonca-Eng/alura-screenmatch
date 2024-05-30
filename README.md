@@ -1056,7 +1056,7 @@ public class Principal {
 
 Ao longo do curso, compreendi a importância de modular o código, utilizando boas práticas para garantir a legibilidade e manutenção.
 
-<detais>
+<details>
   <summary> Para saber mais: Constantes em Java </summary>
 
   A importância das constantes na programação, especialmente em Java, e como utilizá-las corretamente para melhorar a legibilidade, manutenção e consistência do código.
@@ -1268,7 +1268,7 @@ Aprofundamos ainda mais nosso entendimento explorando outros recursos poderosos 
 </p>
 
 
-<detais>
+<details>
   <summary> Para saber mais: Funções Lambda em Java </summary>
   Durante o curso, aprendi sobre as funções lambda em Java e como elas podem simplificar e melhorar a legibilidade do código. Aqui está um resumo do que aprendi:
 
